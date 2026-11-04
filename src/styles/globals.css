@@ -1,0 +1,208 @@
+/* ============================================================
+   globals.css — Base styles, self-hosted fonts, grain overlay
+   ============================================================ */
+
+/* ── Fonts loaded via Google Fonts in index.html ─────────── */
+/* Cormorant Garamond, Pinyon Script, and Plus Jakarta Sans   */
+/* are served from Google CDN — no local @font-face needed.  */
+
+/* ── Tailwind Directives ───────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Resets ───────────────────────────────────────────── */
+@layer base {
+  :root {
+    color-scheme: light; /* LIGHT MODE ONLY — no dark mode */
+    --scrollbar-width: 0px;
+  }
+
+  html {
+    @apply scroll-smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-pearl text-espresso font-body antialiased;
+    overflow-x: hidden;
+    /* Film grain overlay via pseudo-element */
+  }
+
+  /* Smooth scrollbar hidden but functional */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-champagne rounded-full;
+  }
+
+  /* Focus ring — AA accessibility */
+  :focus-visible {
+    outline: 2px solid #B8935A;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Image defaults */
+  img {
+    @apply select-none;
+  }
+
+  /* Heading rhythm */
+  h1, h2, h3, h4 {
+    @apply font-display italic text-espresso;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+/* ── Component Layer ───────────────────────────────────────── */
+@layer components {
+  /* Glass card */
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-glass border border-white/60 rounded-glass shadow-glass;
+  }
+
+  .glass-card-strong {
+    @apply bg-white/60 backdrop-blur-glass border border-white/80 rounded-glass shadow-glass-strong;
+  }
+
+  /* Arch-shaped image frame */
+  .arch-frame {
+    border-radius: 50% 50% 0 0 / 60% 60% 0 0;
+    overflow: hidden;
+  }
+
+  /* Label style */
+  .label {
+    @apply text-label uppercase tracking-widest font-body font-medium text-espresso-light;
+    letter-spacing: 0.2em;
+  }
+
+  /* Gold hairline */
+  .hairline {
+    @apply h-px bg-gold-hairline;
+    background-image: linear-gradient(90deg, transparent, #B8935A 30%, #B8935A 70%, transparent);
+  }
+
+  /* Pill button */
+  .pill-btn {
+    @apply inline-flex items-center gap-2 px-8 py-4 rounded-pill font-body font-medium text-sm
+           uppercase tracking-widest transition-all duration-smooth ease-cinematic;
+  }
+
+  .pill-btn-primary {
+    @apply pill-btn bg-espresso text-pearl hover:bg-espresso/90 hover:scale-[1.02] active:scale-[0.98];
+    box-shadow: 0 4px 24px rgba(58, 40, 35, 0.2);
+  }
+
+  .pill-btn-gold {
+    @apply pill-btn text-espresso;
+    background: linear-gradient(120deg, #D9A38F 0%, #EBC4B3 40%, #D9A38F 60%, #B76E79 100%);
+    background-size: 200% auto;
+    box-shadow: 0 4px 24px rgba(184, 147, 90, 0.3);
+    transition: background-position 0.6s ease, transform 0.3s ease;
+  }
+  .pill-btn-gold:hover {
+    background-position: right center;
+    transform: scale(1.02);
+  }
+
+  .pill-btn-ghost {
+    @apply pill-btn border border-gold-line/50 text-espresso hover:border-gold-line hover:bg-champagne/20;
+  }
+
+  /* Section wrapper */
+  .section-wrap {
+    @apply relative px-6 md:px-12 lg:px-24 py-section;
+  }
+
+  /* Display headline */
+  .headline-xl {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: clamp(3.5rem, 10vw, 10rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #3A2823;
+  }
+
+  .headline-lg {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: clamp(2.5rem, 6vw, 6rem);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Script name */
+  .script-name {
+    font-family: "Pinyon Script", cursive;
+    color: #B76E79;
+  }
+
+  /* Bento grid */
+  .bento-grid {
+    @apply grid gap-4 md:gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* ── Utility Layer ─────────────────────────────────────────── */
+@layer utilities {
+  /* Film grain overlay */
+  .grain-overlay::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  /* Arch mask utility */
+  .arch-mask {
+    clip-path: ellipse(50% 55% at 50% 50%);
+  }
+
+  /* Text gradient */
+  .text-rose-gradient {
+    background: linear-gradient(120deg, #D9A38F, #B76E79);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(120deg, #B8935A, #EBD3B5, #B8935A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Reduced motion — disable everything */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Safe area insets for iPhone notch */
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-x { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+}

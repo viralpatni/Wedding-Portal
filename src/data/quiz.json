@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "question": "Who takes longer to get ready for a grand family event?",
+    "options": [
+      "Avani — perfection and bridal elegance take time!",
+      "Ankit — perfecting the royal look is serious business",
+      "Both take turns inspecting the mirror",
+      "Neither — the cousins have to drag both of them out!"
+    ],
+    "correct": 0,
+    "funFact": "True royal elegance never rushes — and Avani always steals the show!"
+  },
+  {
+    "id": 2,
+    "question": "At 1:00 AM, who is the first to suggest ordering midnight snacks?",
+    "options": [
+      "Ankit — never says no to a late-night feast",
+      "Avani — dessert cravings strike after midnight!",
+      "Both order simultaneously from two different apps",
+      "They negotiate over sweet vs spicy for 30 minutes"
+    ],
+    "correct": 2,
+    "funFact": "The true couple chemistry: one wants dessert, one wants spicy, so they order both!"
+  },
+  {
+    "id": 3,
+    "question": "Who is more likely to misplace their car keys or phone in the house?",
+    "options": [
+      "Ankit — will search the whole house while it's in his hand",
+      "Avani — safe inside her handbag abyss",
+      "Neither — they have laser-sharp photographic memory",
+      "The family detective solves it every time"
+    ],
+    "correct": 0,
+    "funFact": "It's always either in his jacket pocket or right in front of him!"
+  },
+  {
+    "id": 4,
+    "question": "When planning a holiday trip, who creates the detailed itinerary?",
+    "options": [
+      "Avani — color-coded spreadsheets, cafes, and scenic photo spots",
+      "Ankit — prefers 'let's land first and figure it out'",
+      "Both agree only on the flight time and wing the rest",
+      "They let Google Maps decide their fate"
+    ],
+    "correct": 0,
+    "funFact": "Every scenic cafe and sunset viewpoint on their trips is curated to perfection by Avani!"
+  },
+  {
+    "id": 5,
+    "question": "Who will be the last person standing on the dance floor at the Sangeet?",
+    "options": [
+      "Ankit leading the groomsmen crew",
+      "Avani with the bridesmaids squad",
+      "Both dancing together until the DJ pulls the plug at 4 AM",
+      "The uncles after two rounds of dhol beats"
+    ],
+    "correct": 2,
+    "funFact": "When the dhol strikes, Ankit & Avani's energy lights up the entire hall!"
+  },
+  {
+    "id": 6,
+    "question": "Who is more likely to hit snooze on the morning alarm 5 times?",
+    "options": [
+      "Ankit — 'just 5 more minutes of dreamland'",
+      "Avani — morning meditation first",
+      "Both are heavy morning sleepers",
+      "Neither — always up with the morning sunshine"
+    ],
+    "correct": 0,
+    "funFact": "The snooze button was invented specifically for Sunday mornings together!"
+  },
+  {
+    "id": 7,
+    "question": "What is Avani's secret superpower in the relationship?",
+    "options": [
+      "Her infectious laugh that instantly melts all stress",
+      "Her uncanny ability to know what Ankit is thinking before he speaks",
+      "Her warm and loving aura that brings the entire family together",
+      "All of the above — she is truly extraordinary!"
+    ],
+    "correct": 3,
+    "funFact": "Avani brings endless warmth, wisdom, and sunshine into everyone's hearts."
+  },
+  {
+    "id": 8,
+    "question": "What is the official celebration hashtag for Ankit & Avani's big day?",
+    "options": [
+      "#AnkitWedAvani",
+      "#AvNitForever",
+      "#TwoHeartsOneForever",
+      "#PatniFamilyWedding2027"
+    ],
+    "correct": 0,
+    "funFact": "Tag your blessings, reels, and candid photos with #AnkitWedAvani!"
+  }
+]
