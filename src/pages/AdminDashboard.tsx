@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -16,10 +16,23 @@ import {
   ChevronRight,
   Eye,
   RefreshCw,
-  FolderOpen
+  FolderOpen,
+  MessageSquare,
+  Users,
+  CheckCircle,
+  XCircle,
+  Volume2
 } from "lucide-react";
 import { useAdmin } from "@/context/AdminContext";
 import type { InvitationPageData, AdminImageItem } from "@/context/AdminContext";
+import {
+  getStoredRSVPs,
+  deleteStoredRSVP,
+  getBlessings,
+  deleteStoredBlessing,
+  type RSVPItem,
+  type BlessingItem
+} from "@/lib/supabase";
 
 export default function AdminDashboard() {
   const {
@@ -47,8 +60,25 @@ export default function AdminDashboard() {
     }
   }, [isAuthenticated, navigate]);
 
-  const [activeTab, setActiveTab] = useState<"invitation" | "images" | "events">("invitation");
+  const [activeTab, setActiveTab] = useState<"invitation" | "images" | "rsvp" | "blessings">("invitation");
   const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  // RSVP & Blessings Data State
+  const [rsvps, setRsvps] = useState<(RSVPItem & { id: string; submitted_at: string })[]>([]);
+  const [blessings, setBlessings] = useState<BlessingItem[]>([]);
+
+  const refreshRSVPData = () => {
+    setRsvps(getStoredRSVPs());
+  };
+
+  const refreshBlessingData = () => {
+    getBlessings().then(setBlessings);
+  };
+
+  useEffect(() => {
+    refreshRSVPData();
+    refreshBlessingData();
+  }, [activeTab]);
 
   const showToast = (msg: string) => {
     setSuccessToast(msg);
@@ -212,7 +242,31 @@ export default function AdminDashboard() {
             }`}
           >
             <ImageIcon className="w-4 h-4" />
-            <span>Image Manager &amp; Section Folders ({customImages.length})</span>
+            <span>Image Manager ({customImages.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("rsvp")}
+            className={`flex items-center gap-2 px-5 py-2.5 border-b-2 text-xs uppercase tracking-wider font-semibold transition-all whitespace-nowrap ${
+              activeTab === "rsvp"
+                ? "border-[#641E2B] text-[#641E2B]"
+                : "border-transparent text-[#3A211C]/60 hover:text-[#3A211C]"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>RSVP Messages ({rsvps.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("blessings")}
+            className={`flex items-center gap-2 px-5 py-2.5 border-b-2 text-xs uppercase tracking-wider font-semibold transition-all whitespace-nowrap ${
+              activeTab === "blessings"
+                ? "border-[#641E2B] text-[#641E2B]"
+                : "border-transparent text-[#3A211C]/60 hover:text-[#3A211C]"
+            }`}
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>Blessings Wall ({blessings.length})</span>
           </button>
         </div>
       </header>
@@ -899,6 +953,303 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 3: RSVP MESSAGES & ATTENDANCE TRACKER                 */}
+        {/* ========================================================= */}
+        {activeTab === "rsvp" && (
+          <div className="space-y-8">
+            <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4 text-[#D4AF77]" />
+                  <span className="text-xs uppercase tracking-widest text-[#D4AF77] font-semibold">
+                    Guest Response Sanctuary
+                  </span>
+                </div>
+                <h2 className="font-display italic text-3xl text-[#3A211C]">
+                  RSVP Messages &amp; Headcount
+                </h2>
+                <p className="text-xs text-[#3A211C]/70 max-w-2xl mt-1">
+                  Every RSVP response submitted by guests on the website is sent here. View attendance numbers, meal preferences, ceremonies chosen, and personal notes.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    refreshRSVPData();
+                    showToast("RSVP list refreshed!");
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-white border border-[#D4AF77]/50 text-[#3A211C] text-xs font-semibold uppercase tracking-wider hover:bg-[#FFF8F0] transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-[#641E2B]" />
+                  <span>Refresh List</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stat Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="p-5 rounded-2xl bg-white/90 border border-[#D4AF77]/30 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-[#3A211C]/60 font-semibold block mb-1">
+                  Total Responses
+                </span>
+                <p className="font-display italic text-3xl text-[#641E2B]">
+                  {rsvps.length}
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-emerald-800 font-semibold block mb-1">
+                  Joyfully Attending
+                </span>
+                <p className="font-display italic text-3xl text-emerald-700">
+                  {rsvps.filter((r) => r.attending).length}
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF9F5] to-[#FBECE8] border border-[#D4AF77]/40 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-[#641E2B] font-semibold block mb-1">
+                  Confirmed Headcount
+                </span>
+                <p className="font-display italic text-3xl text-[#3A211C]">
+                  {rsvps.filter((r) => r.attending).reduce((acc, r) => acc + (Number(r.guest_count) || 1), 0)}
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-rose-50/70 border border-rose-200 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-rose-800 font-semibold block mb-1">
+                  Regretfully Declining
+                </span>
+                <p className="font-display italic text-3xl text-rose-700">
+                  {rsvps.filter((r) => !r.attending).length}
+                </p>
+              </div>
+            </div>
+
+            {/* RSVPs Cards List */}
+            {rsvps.length === 0 ? (
+              <div className="bg-white/80 rounded-3xl p-16 text-center border-2 border-dashed border-[#D4AF77]/30">
+                <Users className="w-10 h-10 text-[#D4AF77] mx-auto mb-2 opacity-60" />
+                <h4 className="font-display italic text-2xl text-[#3A211C] mb-1">
+                  No RSVP Messages Yet
+                </h4>
+                <p className="text-xs text-[#3A211C]/60 max-w-sm mx-auto">
+                  When guests submit their attendance and greetings in the RSVP section on the website, their full details will appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {rsvps.map((rsvp) => (
+                  <div
+                    key={rsvp.id}
+                    className="bg-white/95 rounded-2xl p-6 border border-[#D4AF77]/35 shadow-sm space-y-3 relative hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-display italic text-xl text-[#3A211C]">
+                            {rsvp.name}
+                          </h4>
+                          {rsvp.attending ? (
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3" />
+                              <span>Attending ({rsvp.guest_count} guests)</span>
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                              <XCircle className="w-3 h-3" />
+                              <span>Not Attending</span>
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#3A211C]/50 mt-0.5">
+                          Submitted on {new Date(rsvp.submitted_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete RSVP response from ${rsvp.name}?`)) {
+                            deleteStoredRSVP(rsvp.id);
+                            refreshRSVPData();
+                            showToast("RSVP removed.");
+                          }
+                        }}
+                        className="text-red-400 hover:text-red-700 p-1"
+                        title="Delete RSVP"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {rsvp.attending && (
+                      <div className="space-y-1.5 text-xs text-[#3A211C]/80 pt-1 border-t border-[#D4AF77]/20">
+                        {rsvp.food_pref && (
+                          <p>
+                            <span className="font-semibold text-[#641E2B]">Meal Preference: </span>
+                            <span>{rsvp.food_pref}</span>
+                          </p>
+                        )}
+                        {rsvp.events && rsvp.events.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {rsvp.events.map((evId) => (
+                              <span
+                                key={evId}
+                                className="px-2 py-0.5 rounded-md bg-[#FFF8F0] border border-[#D4AF77]/40 text-[10px] font-medium uppercase text-[#3A211C]"
+                              >
+                                {evId}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {rsvp.message && (
+                      <div className="pt-2 border-t border-[#D4AF77]/15">
+                        <p className="text-[11px] text-[#641E2B] font-semibold uppercase tracking-wider mb-0.5">
+                          Personal Message:
+                        </p>
+                        <p className="text-xs italic text-[#3A211C]/85 bg-[#FFFDFB] p-3 rounded-xl border border-[#D4AF77]/25 leading-relaxed">
+                          "{rsvp.message}"
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 4: BLESSINGS WALL & VOICE NOTE VAULT                  */}
+        {/* ========================================================= */}
+        {activeTab === "blessings" && (
+          <div className="space-y-8">
+            <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4 text-[#D4AF77]" />
+                  <span className="text-xs uppercase tracking-widest text-[#D4AF77] font-semibold">
+                    Sacred Wishes Vault
+                  </span>
+                </div>
+                <h2 className="font-display italic text-3xl text-[#3A211C]">
+                  Blessings Wall &amp; Voice Notes
+                </h2>
+                <p className="text-xs text-[#3A211C]/70 max-w-2xl mt-1">
+                  Every blessing lantern released by guests is displayed on the live website and preserved here. Listen to recorded audio voice notes or read prayers.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    refreshBlessingData();
+                    showToast("Blessings list refreshed!");
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-white border border-[#D4AF77]/50 text-[#3A211C] text-xs font-semibold uppercase tracking-wider hover:bg-[#FFF8F0] transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-[#641E2B]" />
+                  <span>Refresh Blessings</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stat Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl bg-white/90 border border-[#D4AF77]/30 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-[#3A211C]/60 font-semibold block mb-1">
+                  Total Blessings Released
+                </span>
+                <p className="font-display italic text-3xl text-[#641E2B]">
+                  {blessings.length}
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF9F5] to-[#FBECE8] border border-[#D4AF77]/40 shadow-sm text-center">
+                <span className="text-[10px] uppercase tracking-wider text-[#641E2B] font-semibold block mb-1">
+                  Audio Voice Notes Recorded
+                </span>
+                <p className="font-display italic text-3xl text-[#3A211C]">
+                  {blessings.filter((b) => b.voice_url).length}
+                </p>
+              </div>
+            </div>
+
+            {/* Blessings List */}
+            {blessings.length === 0 ? (
+              <div className="bg-white/80 rounded-3xl p-16 text-center border-2 border-dashed border-[#D4AF77]/30">
+                <span className="text-4xl mb-2 block">🪔</span>
+                <h4 className="font-display italic text-2xl text-[#3A211C] mb-1">
+                  No Blessings Submitted Yet
+                </h4>
+                <p className="text-xs text-[#3A211C]/60 max-w-sm mx-auto">
+                  When guests release blessing lanterns on the Blessings Wall, their written wishes and recorded voice notes will be archived here.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {blessings.map((b) => (
+                  <div
+                    key={b.id}
+                    className="bg-white/95 rounded-2xl p-6 border border-[#D4AF77]/35 shadow-sm space-y-3 relative hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">{b.emoji || "💖"}</span>
+                        <div>
+                          <h4 className="font-display italic text-xl text-[#3A211C]">
+                            {b.name}
+                          </h4>
+                          <p className="text-[10px] text-[#641E2B] uppercase tracking-wider font-semibold">
+                            {new Date(b.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete blessing from ${b.name}?`)) {
+                            deleteStoredBlessing(b.id);
+                            refreshBlessingData();
+                            showToast("Blessing deleted.");
+                          }
+                        }}
+                        className="text-red-400 hover:text-red-700 p-1"
+                        title="Delete Blessing"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-[#3A211C]/85 bg-[#FFFDFB] p-3.5 rounded-xl border border-[#D4AF77]/25 leading-relaxed italic">
+                      "{b.message}"
+                    </p>
+
+                    {/* Voice Note Audio Player */}
+                    {b.voice_url && (
+                      <div className="mt-2 p-3 rounded-xl bg-gradient-to-r from-[#FFF8F0] to-[#FBECE8] border border-[#D4AF77]/40 space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-[#641E2B] font-semibold">
+                          <Volume2 className="w-4 h-4 text-[#D4AF77]" />
+                          <span>Recorded Audio Blessing:</span>
+                        </div>
+                        <audio src={b.voice_url} controls className="w-full h-8" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>

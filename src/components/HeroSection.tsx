@@ -227,26 +227,39 @@ export default function HeroSection({
 
           {/* Portrait & 3D Hearts side */}
           <div className="lg:col-span-5 flex items-center justify-center order-1 lg:order-2 relative">
-            {/* Couple portrait arch container */}
+            {/* Couple Romantic Sculpted Cameo Frame */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.45, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-[280px] sm:w-[320px] md:w-[350px]"
+              className="relative w-[280px] sm:w-[320px] md:w-[360px]"
             >
-              {/* Outer offset gold arch outline */}
+              {/* Luminous Romantic Aura Glow */}
+              <div className="absolute -inset-6 rounded-[160px_160px_120px_120px] bg-gradient-to-tr from-[#641E2B]/25 via-[#D4AF77]/30 to-[#D9A6A1]/35 blur-2xl pointer-events-none animate-pulse" />
+
+              {/* Outer Ornate Filigree Frame with Gold Beading */}
               <div
-                className="absolute -inset-3.5 border-2 border-[#D4AF77]/40 rounded-t-full pointer-events-none"
-                style={{ transform: "translate(8px, 8px)" }}
+                className="absolute -inset-3.5 border-2 border-dashed border-[#D4AF77]/60 rounded-[150px_150px_110px_110px] pointer-events-none"
+                style={{ transform: "rotate(-0.5deg)" }}
+              />
+              <div
+                className="absolute -inset-1.5 border border-[#641E2B]/30 rounded-[145px_145px_105px_105px] pointer-events-none"
               />
 
-              {/* Main portrait frame */}
-              <div className="relative rounded-t-full overflow-hidden aspect-[3/4] bg-gradient-to-b from-[#FFFDFB] via-[#F6D6DC]/30 to-[#EBD3B5]/40 shadow-[0_20px_50px_rgba(100,30,43,0.12)] border border-[#D4AF77]/30">
+              {/* Romantic Filigree Corner Medallions */}
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-gradient-to-r from-[#D4AF77] via-[#FFF8F0] to-[#D4AF77] text-[#641E2B] text-[10px] font-bold uppercase tracking-widest border border-[#D4AF77] shadow-md flex items-center gap-1.5 whitespace-nowrap">
+                <span>✦</span>
+                <span className="font-script text-base normal-case tracking-normal">AvNit Forever</span>
+                <span>✦</span>
+              </div>
+
+              {/* Main Portrait Frame with Romantic Curvature */}
+              <div className="relative rounded-[140px_140px_100px_100px] overflow-hidden aspect-[3/4] bg-gradient-to-b from-[#FFFDFB] via-[#F6D6DC]/30 to-[#EBD3B5]/40 shadow-[0_25px_60px_rgba(100,30,43,0.22)] border-2 border-[#D4AF77]">
                 {heroImg.src ? (
                   <img
                     src={heroImg.src}
                     alt={heroImg.alt}
-                    className="w-full h-full object-cover select-none"
+                    className="w-full h-full object-cover select-none hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 ) : (
                   <ImagePlaceholder
@@ -258,8 +271,16 @@ export default function HeroSection({
                   />
                 )}
 
-                {/* Subtle vignette layer */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#3A211C]/30 via-transparent to-transparent pointer-events-none" />
+                {/* Subtle romantic vignette & soft light wash */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#3A211C]/35 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 p-4 text-center bg-gradient-to-t from-[#241310]/80 via-[#241310]/40 to-transparent">
+                  <p className="font-script text-2xl text-white drop-shadow-sm" style={{ fontFamily: "'Pinyon Script', cursive" }}>
+                    Ankit &amp; Avani
+                  </p>
+                  <p className="text-[9px] uppercase tracking-[0.25em] text-[#D4AF77] font-semibold">
+                    Two Hearts · One Forever
+                  </p>
+                </div>
               </div>
             </motion.div>
 

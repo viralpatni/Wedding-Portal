@@ -16,6 +16,7 @@ import Cursor from "@/components/ui/Cursor";
 import AmbientLayer from "@/components/ui/AmbientLayer";
 import MusicPlayer from "@/components/ui/MusicPlayer";
 import ReduceMotionToggle from "@/components/shared/ReduceMotionToggle";
+import FullPageShower from "@/components/ui/FullPageShower";
 
 // Section Components
 import Loader from "@/components/sections/Loader";
@@ -106,6 +107,7 @@ function WeddingWebsite() {
       )}
 
       {/* Global Interactive Layers */}
+      <FullPageShower />
       <Cursor />
       <AmbientLayer reduceMotion={reduceMotion} />
       <Navigation />

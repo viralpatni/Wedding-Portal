@@ -142,10 +142,39 @@ export async function submitRSVP(rsvp: RSVPItem): Promise<{ success: boolean; me
   // Local storage backup
   try {
     const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.RSVP) || "[]");
-    localStorage.setItem(STORAGE_KEYS.RSVP, JSON.stringify([{ ...rsvp, submitted_at: new Date().toISOString() }, ...existing]));
+    const newEntry = {
+      ...rsvp,
+      id: `rsvp-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      submitted_at: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEYS.RSVP, JSON.stringify([newEntry, ...existing]));
   } catch {}
 
   return { success: true, message: "Your RSVP has been joyfully received!" };
+}
+
+export function getStoredRSVPs(): (RSVPItem & { id: string; submitted_at: string })[] {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.RSVP) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+export function deleteStoredRSVP(id: string): void {
+  try {
+    const existing = getStoredRSVPs();
+    const filtered = existing.filter((item) => item.id !== id);
+    localStorage.setItem(STORAGE_KEYS.RSVP, JSON.stringify(filtered));
+  } catch {}
+}
+
+export function deleteStoredBlessing(id: string): void {
+  try {
+    const existing: BlessingItem[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.BLESSINGS) || "[]");
+    const filtered = existing.filter((b) => b.id !== id);
+    localStorage.setItem(STORAGE_KEYS.BLESSINGS, JSON.stringify(filtered));
+  } catch {}
 }
 
 // 3. QUIZ SCORES & LEADERBOARD

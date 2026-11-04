@@ -1,13 +1,99 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sparkles,
+  Heart,
+  Music,
+  Disc,
+  Send,
+  CheckCircle2,
+  Flame,
+  Volume2,
+  RefreshCw,
+  Gift,
+  Star
+} from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { config } from "@/lib/config";
-import { submitTimeCapsule } from "@/lib/supabase";
 import PillButton from "@/components/shared/PillButton";
 import confetti from "canvas-confetti";
 
+// Romantic Love Oracle Prophecies for Ankit & Avani
+const ROMANTIC_ORACLES = [
+  {
+    prophecy: "Two souls, one sacred destiny — written in the stars long before their paths first crossed.",
+    theme: "Eternal Destiny",
+    icon: "✨"
+  },
+  {
+    prophecy: "Avani's radiant laughter will forever be Ankit's favorite melody, and his gentle loyalty her unshakeable home.",
+    theme: "Soul Connection",
+    icon: "🕊️"
+  },
+  {
+    prophecy: "May your love stand as majestic as the palaces of Rajasthan and as tender as morning dew upon fresh rose petals.",
+    theme: "Royal Grace",
+    icon: "🏰"
+  },
+  {
+    prophecy: "Through late-night chai, spontaneous road trips, and quiet hand-holds across roomfuls of family — you two will always choose each other.",
+    theme: "Everyday Magic",
+    icon: "☕"
+  },
+  {
+    prophecy: "A partnership where friendship comes first, dreams multiply when shared, and joy deepens with every tomorrow.",
+    theme: "Boundless Love",
+    icon: "💍"
+  },
+  {
+    prophecy: "In each other, you have found not just a life partner, but your sacred sanctuary, your mirror, and your greatest adventure.",
+    theme: "True Sanctuary",
+    icon: "🪔"
+  }
+];
+
+// Romantic Sangeet Playlist Dedications
+const SANGEET_SONGS = [
+  { title: "Kesariya", film: "Brahmāstra", mood: "Pure Love Anthem", year: "2022" },
+  { title: "Tere Hawaale", film: "Laal Singh Chaddha", mood: "Soulful Devotion", year: "2023" },
+  { title: "Rang Sharbaton Ka", film: "Phata Poster Nikhla Hero", mood: "Sweet Romance", year: "2013" },
+  { title: "Raabta (Kehte Hain Khuda Ne)", film: "Agent Vinod", mood: "Destined Connection", year: "2012" },
+  { title: "Kudmayi (Royal Vivah Version)", film: "Rocky Aur Rani", mood: "Grand Vivah Special", year: "2023" },
+  { title: "Chaleya", film: "Jawan", mood: "Joyous Couple Dance", year: "2023" }
+];
+
+// Romantic Milestones & Sweet Secrets
+const LOVE_MILESTONES = [
+  {
+    title: "The First Spark",
+    subtitle: "A Glance That Changed Everything",
+    detail: "A moment of gentle curiosity that instantly felt like meeting an old soul. From that first warm smile, destiny silently set their forever into motion.",
+    motif: "💫"
+  },
+  {
+    title: "Hours Like Seconds",
+    subtitle: "Endless Chai & Late Night Talks",
+    detail: "Where conversations never ran dry. Talking about childhood memories, family traditions, and unspoken dreams until the stars surrendered to the sunrise.",
+    motif: "☕"
+  },
+  {
+    title: "The Silent Certainty",
+    subtitle: "Knowing Before Any Words Were Said",
+    detail: "That quiet, golden afternoon where they both realized home was no longer a place — it was each other. The heart had already said yes.",
+    motif: "💍"
+  },
+  {
+    title: "The Sacred Vows",
+    subtitle: "26 January 2027",
+    detail: "Under the sacred mandap, surrounded by the blessings of the Patni family, taking the seven sacred pheras to walk as one for all lifetimes.",
+    motif: "🪔"
+  }
+];
+
 export default function LoveExtras() {
-  // ── 1. QUIZ STATE ──
+  // ─────────────────────────────────────────────────────────────
+  // 1. COUPLE TRIVIA QUIZ
+  // ─────────────────────────────────────────────────────────────
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -19,7 +105,7 @@ export default function LoveExtras() {
     const isCorrect = idx === quizData[currentQIndex].correct;
     if (isCorrect) {
       setScore((prev) => prev + 1);
-      confetti({ particleCount: 20, spread: 50, origin: { y: 0.6 } });
+      confetti({ particleCount: 25, spread: 55, origin: { y: 0.6 } });
     }
   };
 
@@ -32,195 +118,167 @@ export default function LoveExtras() {
     }
   };
 
-  // ── 2. LOVE METER STATE ──
-  const [meterName1, setMeterName1] = useState<string>(config.groom);
-  const [meterName2, setMeterName2] = useState<string>(config.bride);
-  const [meterResult, setMeterResult] = useState<number | null>(null);
-
-  const calculateLove = () => {
-    if (!meterName1.trim() || !meterName2.trim()) return;
-    // Couple gets 100%
-    const isCouple =
-      (meterName1.toLowerCase().includes("ankit") && meterName2.toLowerCase().includes("avani")) ||
-      (meterName1.toLowerCase().includes("avani") && meterName2.toLowerCase().includes("ankit"));
-    const percent = isCouple ? 100 : Math.floor(85 + (Math.sin(meterName1.length + meterName2.length) + 1) * 7.5);
-    setMeterResult(percent);
-    confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
-  };
-
-  // ── 3. SCRATCH CARD STATE ──
-  const scratchCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isScratchedEnough, setIsScratchedEnough] = useState(false);
-
-  useEffect(() => {
-    const canvas = scratchCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Fill with rose gold metallic foil
-    ctx.fillStyle = "#D9A38F";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#FFF";
-    ctx.font = "italic 16px serif";
-    ctx.textAlign = "center";
-    ctx.fillText("✨ Scratch Here with Cursor/Touch ✨", canvas.width / 2, canvas.height / 2 + 5);
-
-    let isDrawing = false;
-    const scratch = (x: number, y: number) => {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.beginPath();
-      ctx.arc(x, y, 20, 0, Math.PI * 2);
-      ctx.fill();
-      setIsScratchedEnough(true);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDrawing) return;
-      const rect = canvas.getBoundingClientRect();
-      scratch(e.clientX - rect.left, e.clientY - rect.top);
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      const t = e.touches[0];
-      scratch(t.clientX - rect.left, t.clientY - rect.top);
-    };
-
-    canvas.addEventListener("mousedown", () => (isDrawing = true));
-    window.addEventListener("mouseup", () => (isDrawing = false));
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchmove", handleTouchMove);
-
-    return () => {
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, []);
-
-  // ── 4. TIME CAPSULE STATE ──
-  const [capsuleName, setCapsuleName] = useState("");
-  const [capsuleMsg, setCapsuleMsg] = useState("");
-  const [capsuleDone, setCapsuleDone] = useState(false);
-
-  const handleCapsuleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!capsuleMsg.trim()) return;
-    await submitTimeCapsule({ name: capsuleName.trim(), message: capsuleMsg.trim() });
-    setCapsuleDone(true);
-  };
-
-  // ── 5. PHOTO BOOTH (ZERO SERVER UPLOAD) ──
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const boothCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  const [activeSticker, setActiveSticker] = useState<"safa" | "garland" | "sunglasses" | "none">("safa");
-  const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
-
-  const startCamera = async () => {
+  // ─────────────────────────────────────────────────────────────
+  // 2. VIRTUAL ROSE & FLOWER SHOWER (Shubh Phoolon Ki Varsha)
+  // ─────────────────────────────────────────────────────────────
+  const [showerCount, setShowerCount] = useState<number>(() => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsCameraActive(true);
-      }
+      const stored = localStorage.getItem("avnit_flower_shower_count");
+      return stored ? parseInt(stored, 10) : 2480;
     } catch {
-      alert("Camera access denied or unavailable.");
+      return 2480;
     }
-  };
+  });
 
-  const takeBoothPhoto = () => {
-    const video = videoRef.current;
-    const canvas = boothCanvasRef.current;
-    if (!video || !canvas) return;
+  const [activeShowerType, setActiveShowerType] = useState<"gulab" | "genda" | "hearts" | "gold">("gulab");
+  const [isShowering, setIsShowering] = useState(false);
 
-    canvas.width = 480;
-    canvas.height = 480;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const triggerFloralShower = (type: "gulab" | "genda" | "hearts" | "gold") => {
+    setActiveShowerType(type);
+    setIsShowering(true);
+    const newCount = showerCount + 10;
+    setShowerCount(newCount);
+    try {
+      localStorage.setItem("avnit_flower_shower_count", newCount.toString());
+    } catch {}
 
-    // Draw video frame
-    ctx.drawImage(video, 0, 0, 480, 480);
-
-    // Draw arch border overlay
-    ctx.strokeStyle = "#B8935A";
-    ctx.lineWidth = 12;
-    ctx.strokeRect(6, 6, 468, 468);
-
-    // Draw sticker
-    ctx.font = "60px sans-serif";
-    ctx.textAlign = "center";
-    if (activeSticker === "safa") {
-      ctx.fillText("👑", 240, 110);
-    } else if (activeSticker === "garland") {
-      ctx.fillText("🌺", 240, 420);
-    } else if (activeSticker === "sunglasses") {
-      ctx.fillText("🕶️", 240, 220);
+    // Full-page canvas shower cascade
+    if (typeof window !== "undefined" && window.triggerWeddingShower) {
+      window.triggerWeddingShower(type);
     }
 
-    // Couple watermark
-    ctx.font = "italic 22px serif";
-    ctx.fillStyle = "#FFF";
-    ctx.shadowColor = "#3A2823";
-    ctx.shadowBlur = 8;
-    ctx.fillText(`${config.groom} & ${config.bride} · 2027`, 240, 455);
+    // Local confetti accompaniment
+    if (type === "gulab") {
+      confetti({
+        particleCount: 35,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ["#800020", "#A51C30", "#C70039", "#8B0000"]
+      });
+    } else if (type === "genda") {
+      confetti({
+        particleCount: 40,
+        spread: 65,
+        origin: { y: 0.6 },
+        colors: ["#F9A825", "#F57F17", "#FF8C00", "#FFB300"]
+      });
+    } else if (type === "hearts") {
+      confetti({
+        particleCount: 40,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#E53935", "#D32F2F", "#FF1744", "#C62828"]
+      });
+    } else {
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ["#D4AF77", "#FFE082", "#FFF8E1", "#B8935A"]
+      });
+    }
 
-    const url = canvas.toDataURL("image/png");
-    setCapturedPhotoUrl(url);
-
-    // Stop stream tracks
-    const stream = video.srcObject as MediaStream;
-    if (stream) stream.getTracks().forEach((t) => t.stop());
-    setIsCameraActive(false);
+    setTimeout(() => setIsShowering(false), 3800);
   };
+
+  // ─────────────────────────────────────────────────────────────
+  // 3. SANGEET JUKEBOX & SONG DEDICATIONS
+  // ─────────────────────────────────────────────────────────────
+  const [selectedSongIdx, setSelectedSongIdx] = useState(0);
+  const [dedicationName, setDedicationName] = useState("");
+  const [dedicationNote, setDedicationNote] = useState("");
+  const [hasDedicated, setHasDedicated] = useState(false);
+  const [isPlayingJukebox, setIsPlayingJukebox] = useState(false);
+
+  const handleDedicateSong = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dedicationName.trim()) return;
+    setHasDedicated(true);
+    confetti({
+      particleCount: 30,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ["#D4AF77", "#641E2B", "#B76E79"]
+    });
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 4. ROMANTIC DESTINY ORACLE
+  // ─────────────────────────────────────────────────────────────
+  const [oracleIdx, setOracleIdx] = useState(0);
+  const [isOracleFlipping, setIsOracleFlipping] = useState(false);
+
+  const nextOracle = () => {
+    setIsOracleFlipping(true);
+    setTimeout(() => {
+      setOracleIdx((prev) => (prev + 1) % ROMANTIC_ORACLES.length);
+      setIsOracleFlipping(false);
+      confetti({ particleCount: 20, spread: 40, origin: { y: 0.6 } });
+    }, 280);
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 5. SWEET SECRETS MILESTONES (Active selected card)
+  // ─────────────────────────────────────────────────────────────
+  const [activeMilestoneIdx, setActiveMilestoneIdx] = useState(0);
 
   return (
     <section
       id="extras"
-      className="relative py-28 sm:py-36 px-6 sm:px-12 bg-gradient-to-b from-[#FBF7F2] via-[#F6D6DC]/10 to-[#FBF7F2] overflow-hidden"
-      aria-label="Love Extras and Interactive Games"
+      className="relative py-28 sm:py-36 px-6 sm:px-12 bg-gradient-to-b from-[#FFF8F0] via-[#FDF7F2] to-[#FFF8F0] overflow-hidden"
+      aria-label="Romantic Wedding Celebrations & Experiences"
     >
+      {/* Decorative ambient background glows */}
+      <div className="absolute top-1/4 -right-32 w-96 h-96 rounded-full blur-[110px] opacity-25 bg-[#D4AF77] pointer-events-none" />
+      <div className="absolute bottom-1/4 -left-32 w-96 h-96 rounded-full blur-[110px] opacity-20 bg-[#641E2B] pointer-events-none" />
+
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <motion.p
+        <div className="text-center mb-16 sm:mb-20">
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="label text-[#B76E79] tracking-[0.25em] mb-3 text-xs sm:text-sm"
+            className="inline-flex items-center gap-2 mb-3"
           >
-            Playful Keepsakes
-          </motion.p>
+            <Sparkles className="w-4 h-4 text-[#D4AF77]" />
+            <span className="text-xs uppercase tracking-[0.25em] font-body font-semibold text-[#641E2B]">
+              Celebratory Keepsakes
+            </span>
+            <Sparkles className="w-4 h-4 text-[#D4AF77]" />
+          </motion.div>
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A2823] mb-4"
+            className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A211C] mb-4"
           >
-            The Love Extras
+            Celebrations of Love
           </motion.h2>
+
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-[#3A2823]/60 font-body text-sm sm:text-base max-w-xl mx-auto"
+            className="text-[#3A211C]/70 font-body text-sm sm:text-base max-w-xl mx-auto"
           >
-            Trivia quiz, compatibility meter, scratch surprises, photo booth with royal stickers, and an anniversary time capsule.
+            Playful trivia, virtual rose showers, Sangeet dance dedications, romantic whispers of destiny, and tender milestone memories dedicated to Ankit &amp; Avani.
           </motion.p>
         </div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* BENTO CARD 1: THE COUPLE QUIZ (Spans 2 cols on lg) */}
-          <div className="lg:col-span-2 bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_10px_30px_rgba(58,40,35,0.06)] flex flex-col justify-between">
+          {/* ========================================================= */}
+          {/* BENTO CARD 1: THE COUPLE TRIVIA QUIZ (Spans 2 cols on lg) */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-2 bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_12px_35px_rgba(58,33,28,0.06)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/30 text-[#3A2823] text-xs font-semibold uppercase tracking-wider font-body">
+                <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/30 text-[#641E2B] text-xs font-semibold uppercase tracking-wider font-body">
                   🧠 The Couple Trivia Quiz
                 </span>
                 <span className="text-xs text-[#B76E79] font-body font-semibold">
@@ -230,10 +288,10 @@ export default function LoveExtras() {
 
               {!isQuizCompleted ? (
                 <div>
-                  <p className="text-xs uppercase tracking-widest text-[#3A2823]/50 font-body mb-2">
+                  <p className="text-xs uppercase tracking-widest text-[#3A211C]/50 font-body mb-2">
                     Question {currentQIndex + 1} of {quizData.length}
                   </p>
-                  <h3 className="font-display italic text-2xl sm:text-3xl text-[#3A2823] mb-6">
+                  <h3 className="font-display italic text-2xl sm:text-3xl text-[#3A211C] mb-6">
                     {quizData[currentQIndex].question}
                   </h3>
 
@@ -243,10 +301,10 @@ export default function LoveExtras() {
                       const isChosen = selectedOption === idx;
                       const isCorrect = idx === quizData[currentQIndex].correct;
 
-                      let btnStyle = "bg-[#FBF7F2] border-[#B8935A]/30 text-[#3A2823]";
+                      let btnStyle = "bg-[#FFFDFB] border-[#D4AF77]/40 text-[#3A211C] hover:border-[#D4AF77]";
                       if (selectedOption !== null) {
-                        if (isCorrect) btnStyle = "bg-emerald-100 border-emerald-500 text-emerald-900";
-                        else if (isChosen) btnStyle = "bg-rose-100 border-rose-500 text-rose-900";
+                        if (isCorrect) btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-900";
+                        else if (isChosen) btnStyle = "bg-rose-50 border-rose-400 text-rose-900";
                       }
 
                       return (
@@ -265,16 +323,16 @@ export default function LoveExtras() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-3.5 rounded-2xl bg-[#F6D6DC]/30 border border-[#F6D6DC] mb-6 flex items-center justify-between"
+                      className="p-3.5 rounded-2xl bg-[#F6D6DC]/30 border border-[#F6D6DC] mb-2 flex items-center justify-between"
                     >
-                      <p className="text-xs text-[#3A2823] font-body">
+                      <p className="text-xs text-[#3A211C] font-body">
                         💡 {quizData[currentQIndex].funFact}
                       </p>
                       <button
                         onClick={handleNextQuestion}
-                        className="ml-3 px-4 py-1.5 rounded-full bg-[#3A2823] text-white text-xs font-body uppercase tracking-wider"
+                        className="ml-3 px-4 py-1.5 rounded-full bg-[#641E2B] text-white text-xs font-body uppercase tracking-wider hover:bg-[#4E1420] transition-colors shadow-sm shrink-0"
                       >
-                        Next →
+                        {currentQIndex < quizData.length - 1 ? "Next →" : "See Result ✦"}
                       </button>
                     </motion.div>
                   )}
@@ -283,10 +341,10 @@ export default function LoveExtras() {
                 /* QUIZ RESULT */
                 <div className="text-center py-8">
                   <span className="text-5xl mb-3 block">🏆</span>
-                  <h3 className="font-display italic text-3xl text-[#3A2823] mb-2">
+                  <h3 className="font-display italic text-3xl text-[#3A211C] mb-2">
                     You Scored {score} out of {quizData.length}!
                   </h3>
-                  <p className="text-sm text-[#3A2823]/75 font-body max-w-md mx-auto mb-6">
+                  <p className="text-sm text-[#3A211C]/75 font-body max-w-md mx-auto mb-6">
                     {score >= 6
                       ? `Incredible! You know ${config.groom} & ${config.bride} like the back of your hand! ❤️`
                       : `A wonderful try! Get ready to discover even more fun stories at the Sangeet night! 💃`}
@@ -298,7 +356,7 @@ export default function LoveExtras() {
                       setScore(0);
                       setIsQuizCompleted(false);
                     }}
-                    className="px-6 py-2.5 rounded-full bg-[#3A2823] text-white text-xs font-body uppercase tracking-wider hover:bg-[#641E2B] transition-colors shadow-md"
+                    className="px-6 py-2.5 rounded-full bg-[#641E2B] text-white text-xs font-body uppercase tracking-wider hover:bg-[#4E1420] transition-colors shadow-md cursor-pointer"
                   >
                     Play Again ↻
                   </button>
@@ -307,240 +365,343 @@ export default function LoveExtras() {
             </div>
           </div>
 
-          {/* BENTO CARD 2: LOVE METER */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_10px_30px_rgba(58,40,35,0.06)] flex flex-col justify-between">
+          {/* ========================================================= */}
+          {/* BENTO CARD 2: VIRTUAL ROSE & FLOWER SHOWER                */}
+          {/* ========================================================= */}
+          <div className="bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_12px_35px_rgba(58,33,28,0.06)] flex flex-col justify-between">
             <div>
-              <span className="px-3.5 py-1 rounded-full bg-[#F6D6DC]/50 text-[#B76E79] text-xs font-semibold uppercase tracking-wider font-body">
-                💖 Love Compatibility
-              </span>
-              <h3 className="font-display italic text-2xl text-[#3A2823] mt-3 mb-2">
-                Cosmic Love Meter
-              </h3>
-              <p className="text-xs text-[#3A2823]/60 font-body mb-6">
-                Calculate the astrological love resonance between any two names!
-              </p>
-
-              <div className="space-y-3 mb-6">
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  value={meterName1}
-                  onChange={(e) => setMeterName1(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl bg-[#FBF7F2] border border-[#B8935A]/30 text-xs text-[#3A2823]"
-                />
-                <input
-                  type="text"
-                  placeholder="Second Name"
-                  value={meterName2}
-                  onChange={(e) => setMeterName2(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl bg-[#FBF7F2] border border-[#B8935A]/30 text-xs text-[#3A2823]"
-                />
+              <div className="flex items-center justify-between mb-3">
+                <span className="px-3.5 py-1 rounded-full bg-[#F6D6DC]/60 text-[#641E2B] text-xs font-semibold uppercase tracking-wider font-body">
+                  🌸 Shubh Varsha
+                </span>
+                <span className="text-[11px] text-[#D4AF77] font-semibold uppercase tracking-wider font-body">
+                  Blessings
+                </span>
               </div>
 
-              {meterResult !== null && (
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-[#F6D6DC]/50 to-[#FFDCC8]/50 text-center mb-4"
+              <h3 className="font-display italic text-2xl text-[#3A211C] mb-1">
+                Shower of Petals
+              </h3>
+              <p className="text-xs text-[#3A211C]/65 font-body mb-5">
+                Send virtual blessing showers of roses and marigolds to celebrate the couple!
+              </p>
+
+              {/* Counter Display */}
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#FFF9F5] to-[#FBECE8] border border-[#D4AF77]/30 text-center mb-5">
+                <span className="text-[10px] uppercase tracking-widest text-[#641E2B] font-semibold block mb-0.5">
+                  Total Petals Showered with Love
+                </span>
+                <motion.p
+                  key={showerCount}
+                  initial={{ scale: 1.15, color: "#641E2B" }}
+                  animate={{ scale: 1, color: "#3A211C" }}
+                  className="font-display italic text-4xl text-[#3A211C]"
                 >
-                  <p className="font-display italic text-4xl text-[#B76E79]">
-                    {meterResult}%
-                  </p>
-                  <p className="text-xs font-body text-[#3A2823] mt-1 font-medium">
-                    {meterResult === 100
-                      ? "Eternal Cosmic Match Made in Heaven! 💍"
-                      : "Destined to dance through life hand in hand! ✨"}
-                  </p>
-                </motion.div>
-              )}
+                  {showerCount.toLocaleString()}
+                </motion.p>
+                <span className="text-[10px] text-[#3A211C]/50 italic">
+                  Blessings showered by family &amp; friends
+                </span>
+              </div>
+
+              {/* Shower Type Buttons Grid */}
+              <div className="grid grid-cols-2 gap-2.5 mb-3">
+                <button
+                  type="button"
+                  onClick={() => triggerFloralShower("gulab")}
+                  className={`p-2.5 rounded-xl border text-xs font-body font-medium flex items-center justify-center gap-1.5 transition-all ${
+                    activeShowerType === "gulab"
+                      ? "bg-[#641E2B] text-white border-[#641E2B] shadow-sm"
+                      : "bg-[#FFFDFB] text-[#3A211C] border-[#D4AF77]/30 hover:bg-[#F6D6DC]/30"
+                  }`}
+                >
+                  <span>🌹</span>
+                  <span>Gulab Varsha</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerFloralShower("genda")}
+                  className={`p-2.5 rounded-xl border text-xs font-body font-medium flex items-center justify-center gap-1.5 transition-all ${
+                    activeShowerType === "genda"
+                      ? "bg-[#F9A825] text-white border-[#F9A825] shadow-sm"
+                      : "bg-[#FFFDFB] text-[#3A211C] border-[#D4AF77]/30 hover:bg-[#FFF9C4]/40"
+                  }`}
+                >
+                  <span>🌼</span>
+                  <span>Genda Phool</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerFloralShower("hearts")}
+                  className={`p-2.5 rounded-xl border text-xs font-body font-medium flex items-center justify-center gap-1.5 transition-all ${
+                    activeShowerType === "hearts"
+                      ? "bg-[#E53935] text-white border-[#E53935] shadow-sm"
+                      : "bg-[#FFFDFB] text-[#3A211C] border-[#D4AF77]/30 hover:bg-[#FFEBEE]/50"
+                  }`}
+                >
+                  <span>💖</span>
+                  <span>Red Hearts</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerFloralShower("gold")}
+                  className={`p-2.5 rounded-xl border text-xs font-body font-medium flex items-center justify-center gap-1.5 transition-all ${
+                    activeShowerType === "gold"
+                      ? "bg-[#B8935A] text-white border-[#B8935A] shadow-sm"
+                      : "bg-[#FFFDFB] text-[#3A211C] border-[#D4AF77]/30 hover:bg-[#FFF8E1]/50"
+                  }`}
+                >
+                  <span>✨</span>
+                  <span>Sona Rupa</span>
+                </button>
+              </div>
             </div>
 
             <PillButton
               variant="gold"
-              onClick={calculateLove}
-              className="w-full justify-center py-2.5"
+              onClick={() => triggerFloralShower(activeShowerType)}
+              disabled={isShowering}
+              className="w-full justify-center py-2.5 text-xs font-semibold"
             >
-              Calculate Match
+              {isShowering ? "Showering Blessings… ✨" : "Shower Ankit & Avani Now ✦"}
             </PillButton>
           </div>
 
-          {/* BENTO CARD 3: SCRATCH CARD */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_10px_30px_rgba(58,40,35,0.06)] flex flex-col justify-between">
+          {/* ========================================================= */}
+          {/* BENTO CARD 3: SANGEET JUKEBOX & SONG DEDICATIONS          */}
+          {/* ========================================================= */}
+          <div className="bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_12px_35px_rgba(58,33,28,0.06)] flex flex-col justify-between">
             <div>
-              <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/40 text-[#3A2823] text-xs font-semibold uppercase tracking-wider font-body">
-                🎁 Secret Surprise
-              </span>
-              <h3 className="font-display italic text-2xl text-[#3A2823] mt-3 mb-2">
-                Foil Scratch Card
+              <div className="flex items-center justify-between mb-3">
+                <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/35 text-[#641E2B] text-xs font-semibold uppercase tracking-wider font-body">
+                  🎶 Sangeet Jukebox
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-[#D4AF77] font-semibold font-body">
+                  Dance Night 2027
+                </span>
+              </div>
+
+              <h3 className="font-display italic text-2xl text-[#3A211C] mb-1">
+                Dedicate a Song
               </h3>
-              <p className="text-xs text-[#3A2823]/60 font-body mb-4">
-                Use your finger or mouse to scratch away the rose gold layer!
+              <p className="text-xs text-[#3A211C]/65 font-body mb-4">
+                Pick a romantic anthem to be played for {config.groom} &amp; {config.bride} during their Sangeet evening!
               </p>
 
-              <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-inner flex items-center justify-center bg-gradient-to-br from-[#FBF7F2] to-[#FFDCC8] p-4 text-center">
-                {/* Secret message underneath */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                  <span className="text-2xl mb-1">💌</span>
-                  <p className="font-display italic text-lg sm:text-xl text-[#3A2823]">
-                    "You two are destined for infinity."
+              {/* Spinning Vinyl Record Visual */}
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-[#241310] via-[#3A211C] to-[#241310] text-white mb-4 shadow-sm">
+                <motion.div
+                  animate={{ rotate: isPlayingJukebox ? 360 : 0 }}
+                  transition={{ duration: 3, repeat: isPlayingJukebox ? Infinity : 0, ease: "linear" }}
+                  className="w-12 h-12 rounded-full bg-gradient-to-tr from-black via-[#3A211C] to-[#D4AF77] flex items-center justify-center border border-[#D4AF77]/50 shrink-0"
+                >
+                  <Disc className="w-6 h-6 text-[#D4AF77]" />
+                </motion.div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold truncate text-[#D4AF77]">
+                    {SANGEET_SONGS[selectedSongIdx].title}
                   </p>
-                  <p className="script-name text-2xl text-[#B76E79] mt-1">
-                    — Rahul
+                  <p className="text-[10px] text-white/70 truncate">
+                    {SANGEET_SONGS[selectedSongIdx].film} · {SANGEET_SONGS[selectedSongIdx].mood}
                   </p>
                 </div>
 
-                {/* Canvas Foil Scratch Layer */}
-                <canvas
-                  ref={scratchCanvasRef}
-                  width={320}
-                  height={180}
-                  className="absolute inset-0 w-full h-full cursor-crosshair"
-                />
+                <button
+                  type="button"
+                  onClick={() => setIsPlayingJukebox(!isPlayingJukebox)}
+                  className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-[#D4AF77] shrink-0"
+                  title="Toggle Jukebox Rhythm"
+                >
+                  <Music className="w-4 h-4" />
+                </button>
               </div>
-            </div>
 
-            <p className="text-[11px] text-center text-[#3A2823]/50 font-body mt-4">
-              {isScratchedEnough ? "Revealed! A secret brotherly wish ✨" : "Rub to scratch foil"}
-            </p>
-          </div>
-
-          {/* BENTO CARD 4: 1-YEAR TIME CAPSULE */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_10px_30px_rgba(58,40,35,0.06)] flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/30 text-[#3A2823] text-xs font-semibold uppercase tracking-wider font-body">
-                  ⏳ 1-Year Time Capsule
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-rose-dark font-body font-semibold">
-                  Locked Till Jan 2028
-                </span>
+              {/* Song Select Carousel Pills */}
+              <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-4">
+                {SANGEET_SONGS.map((song, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setSelectedSongIdx(i);
+                      setIsPlayingJukebox(true);
+                    }}
+                    className={`px-3 py-1 rounded-full text-[11px] font-body whitespace-nowrap transition-all ${
+                      selectedSongIdx === i
+                        ? "bg-[#641E2B] text-white shadow-sm font-medium"
+                        : "bg-[#FFFDFB] border border-[#D4AF77]/30 text-[#3A211C]/75 hover:bg-[#FFF8F0]"
+                    }`}
+                  >
+                    {song.title}
+                  </button>
+                ))}
               </div>
-              <h3 className="font-display italic text-2xl text-[#3A2823] mb-2">
-                Letter to the Future
-              </h3>
-              <p className="text-xs text-[#3A2823]/60 font-body mb-4">
-                Leave a secret message that {config.groom} &amp; {config.bride} will only open on their 1st Wedding Anniversary: 26 January 2028.
-              </p>
 
-              {!capsuleDone ? (
-                <form onSubmit={handleCapsuleSubmit} className="space-y-3">
+              {/* Dedication Form */}
+              {!hasDedicated ? (
+                <form onSubmit={handleDedicateSong} className="space-y-2.5">
                   <input
                     type="text"
-                    placeholder="Your Name (optional)"
-                    value={capsuleName}
-                    onChange={(e) => setCapsuleName(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-[#FBF7F2] border border-[#B8935A]/30 text-xs"
-                  />
-                  <textarea
                     required
-                    rows={3}
-                    placeholder={`Where do you hope to see ${config.groom} and ${config.bride} in one year? What memories will they cherish?`}
-                    value={capsuleMsg}
-                    onChange={(e) => setCapsuleMsg(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-[#FBF7F2] border border-[#B8935A]/30 text-xs resize-none"
+                    placeholder="Your Name (e.g. Kabir, Aunt Sunita)"
+                    value={dedicationName}
+                    onChange={(e) => setDedicationName(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#FFFDFB] border border-[#D4AF77]/40 text-xs text-[#3A211C] placeholder-[#3A211C]/40"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Sweet wish for the dance floor (optional)"
+                    value={dedicationNote}
+                    onChange={(e) => setDedicationNote(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#FFFDFB] border border-[#D4AF77]/40 text-xs text-[#3A211C] placeholder-[#3A211C]/40"
                   />
                   <PillButton
                     variant="primary"
                     type="submit"
-                    className="w-full justify-center py-2.5 text-xs"
+                    className="w-full justify-center py-2.5 text-xs font-semibold"
                   >
-                    Lock Into Vault 🔒
+                    Dedicate Song to Couple 🎵
                   </PillButton>
                 </form>
               ) : (
-                <div className="p-4 rounded-2xl bg-emerald-50 text-center text-xs text-emerald-800 font-body">
-                  ✓ Locked into the anniversary vault! Unlocks Jan 26, 2028.
+                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-center text-xs text-emerald-800 font-body">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 mx-auto mb-1" />
+                  <p className="font-semibold">Song Added to the Sangeet Queue!</p>
+                  <p className="text-[11px] text-emerald-700/80 mt-0.5">
+                    "{SANGEET_SONGS[selectedSongIdx].title}" dedicated by {dedicationName}!
+                  </p>
                 </div>
               )}
             </div>
-
-            <p className="text-[10px] text-center text-[#3A2823]/40 uppercase tracking-widest font-body mt-4">
-              Cryptographically timestamped
-            </p>
           </div>
 
-          {/* BENTO CARD 5: PHOTO BOOTH (Zero Server Upload) */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_10px_30px_rgba(58,40,35,0.06)] flex flex-col justify-between">
+          {/* ========================================================= */}
+          {/* BENTO CARD 4: WHISPERS OF DESTINY & ROMANTIC ORACLE      */}
+          {/* ========================================================= */}
+          <div className="bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_12px_35px_rgba(58,33,28,0.06)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="px-3.5 py-1 rounded-full bg-[#F6D6DC]/60 text-[#B76E79] text-xs font-semibold uppercase tracking-wider font-body">
-                  📸 Virtual Photo Booth
+                <span className="px-3.5 py-1 rounded-full bg-[#EBD3B5]/30 text-[#641E2B] text-xs font-semibold uppercase tracking-wider font-body">
+                  ✨ Whispers of Destiny
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-emerald-700 font-body font-semibold">
-                  100% Private
+                <span className="text-[10px] uppercase tracking-wider text-[#D4AF77] font-semibold font-body">
+                  Eternal Prophecy
                 </span>
               </div>
-              <h3 className="font-display italic text-2xl text-[#3A2823] mb-2">
-                Rajasthani Selfie Frame
+
+              <h3 className="font-display italic text-2xl text-[#3A211C] mb-1">
+                The Love Oracle
               </h3>
-              <p className="text-xs text-[#3A2823]/60 font-body mb-4">
-                Pose with royal stickers. Stays in your browser—zero server upload!
+              <p className="text-xs text-[#3A211C]/65 font-body mb-5">
+                Sacred prophecies and poetic truths written for Ankit &amp; Avani's married life.
               </p>
 
-              {/* Viewport Box */}
-              <div className="relative aspect-square w-full max-w-[260px] mx-auto rounded-2xl overflow-hidden bg-black/5 border border-[#B8935A]/30 flex items-center justify-center mb-4">
-                {!isCameraActive && !capturedPhotoUrl && (
-                  <button
-                    onClick={startCamera}
-                    className="px-4 py-2 rounded-full bg-[#3A2823] text-white text-xs font-body uppercase tracking-wider"
-                  >
-                    Open Camera
-                  </button>
-                )}
-
-                <video
-                  ref={videoRef}
-                  className={`w-full h-full object-cover ${!isCameraActive ? "hidden" : ""}`}
-                  playsInline
-                  muted
-                />
-
-                <canvas ref={boothCanvasRef} className="hidden" />
-
-                {capturedPhotoUrl && (
-                  <img
-                    src={capturedPhotoUrl}
-                    alt="Captured souvenir"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-
-              {/* Sticker Selector */}
-              {isCameraActive && (
-                <div className="flex justify-center gap-2 mb-3">
-                  {(["safa", "garland", "sunglasses"] as const).map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => setActiveSticker(st)}
-                      className={`px-3 py-1 rounded-full text-xs font-body ${
-                        activeSticker === st ? "bg-[#B76E79] text-white" : "bg-white text-[#3A2823]"
-                      }`}
-                    >
-                      {st === "safa" ? "👑 Safa" : st === "garland" ? "🌺 Garland" : "🕶️ Shades"}
-                    </button>
-                  ))}
+              {/* Glowing Sacred Lotus Card */}
+              <div className="relative rounded-2xl p-6 bg-gradient-to-br from-[#FFFDFB] via-[#FCF4EC] to-[#FBF0E6] border border-[#D4AF77] shadow-[0_8px_25px_rgba(212,175,119,0.18)] text-center min-h-[175px] flex flex-col justify-center items-center overflow-hidden">
+                <div className="absolute top-2 right-2 text-xs text-[#D4AF77]">
+                  {ROMANTIC_ORACLES[oracleIdx].icon}
                 </div>
-              )}
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={oracleIdx}
+                    initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -12, scale: 0.96 }}
+                    transition={{ duration: 0.35 }}
+                    className="space-y-2"
+                  >
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF77]/20 text-[#641E2B] text-[10px] uppercase tracking-widest font-semibold">
+                      {ROMANTIC_ORACLES[oracleIdx].theme}
+                    </span>
+                    <p className="font-display italic text-base sm:text-lg text-[#3A211C] leading-snug">
+                      "{ROMANTIC_ORACLES[oracleIdx].prophecy}"
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
 
-            {isCameraActive ? (
+            <div className="pt-4">
               <PillButton
                 variant="gold"
-                onClick={takeBoothPhoto}
-                className="w-full justify-center py-2.5 text-xs"
+                onClick={nextOracle}
+                disabled={isOracleFlipping}
+                className="w-full justify-center py-2.5 text-xs font-semibold"
               >
-                Snap Photo 📷
+                <span>Reveal Another Romantic Prophecy ✨</span>
               </PillButton>
-            ) : capturedPhotoUrl ? (
-              <a
-                href={capturedPhotoUrl}
-                download={`${config.groom}-${config.bride}-PhotoBooth.png`}
-                className="w-full py-2.5 rounded-full bg-[#3A2823] text-white text-center text-xs uppercase tracking-widest font-body font-medium block"
-              >
-                Download Souvenir PNG ⬇
-              </a>
-            ) : null}
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* BENTO CARD 5: SWEET LITTLE SECRETS (Love Milestones)      */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-2 bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-[0_12px_35px_rgba(58,33,28,0.06)] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="px-3.5 py-1 rounded-full bg-[#F6D6DC]/60 text-[#641E2B] text-xs font-semibold uppercase tracking-wider font-body">
+                  💍 Sacred Milestones
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-[#D4AF77] font-semibold font-body">
+                  AvNit Chapters
+                </span>
+              </div>
+
+              <h3 className="font-display italic text-2xl sm:text-3xl text-[#3A211C] mb-1">
+                Sweet Little Secrets
+              </h3>
+              <p className="text-xs text-[#3A211C]/65 font-body mb-5">
+                Explore the quiet, tender milestones that shaped Ankit &amp; Avani's beautiful journey together.
+              </p>
+
+              {/* 4 Interactive Milestone Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                {LOVE_MILESTONES.map((m, idx) => {
+                  const isSelected = activeMilestoneIdx === idx;
+                  return (
+                    <motion.div
+                      key={idx}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setActiveMilestoneIdx(idx);
+                        confetti({ particleCount: 15, spread: 45, origin: { y: 0.7 } });
+                      }}
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-gradient-to-br from-[#FFF9F5] to-[#FBECE8] border-[#641E2B] shadow-md"
+                          : "bg-[#FFFDFB] border-[#D4AF77]/30 hover:border-[#D4AF77]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xl">{m.motif}</span>
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-[#641E2B]">
+                          Chapter 0{idx + 1}
+                        </span>
+                      </div>
+                      <h4 className="font-display italic text-lg text-[#3A211C] mb-0.5">
+                        {m.title}
+                      </h4>
+                      <p className="text-[11px] text-[#D4AF77] font-medium mb-2">
+                        {m.subtitle}
+                      </p>
+                      <p className="text-xs text-[#3A211C]/75 leading-relaxed font-body">
+                        {m.detail}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-[#D4AF77]/20 flex items-center justify-between text-xs text-[#3A211C]/60 font-body">
+              <span>Dedicated with love by Patni Family</span>
+              <span className="text-[#641E2B] font-semibold">{config.hashtag}</span>
+            </div>
           </div>
         </div>
       </div>
