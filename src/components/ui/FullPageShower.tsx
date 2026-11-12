@@ -78,9 +78,11 @@ export default function FullPageShower() {
     };
     window.addEventListener("resize", handleResize);
 
-    // Generate themed particle batch
+    // Generate themed particle batch (responsive count for 60fps mobile)
     const particles: Particle[] = [];
-    const count = showerType === "hearts" ? 70 : showerType === "genda" ? 85 : 75;
+    const isMobile = width < 768;
+    const baseCount = isMobile ? 42 : 75;
+    const count = showerType === "hearts" ? (isMobile ? 38 : 70) : showerType === "genda" ? (isMobile ? 45 : 85) : baseCount;
 
     for (let i = 0; i < count; i++) {
       // Spawn across the top width with some starting higher above the fold

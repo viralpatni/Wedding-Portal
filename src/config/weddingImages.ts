@@ -28,22 +28,22 @@ export const weddingImages = {
   // ── Love Story Chapters ─────────────────────────────────
   loveStory: [
     {
-      src: "",
+      src: "/images/engagement/DSC08106 (1).JPG",
       alt: "Ankit and Avani sharing a memorable moment together — How They Met",
       caption: "How They Met",
     },
     {
-      src: "",
+      src: "/images/engagement/DSC08259.JPG",
       alt: "Ankit and Avani in their early days together — First Memories",
       caption: "First Memories",
     },
     {
-      src: "",
+      src: "/images/engagement/DSC08281.JPG",
       alt: "Ankit and Avani sharing a special moment — Special Moments",
       caption: "Special Moments",
     },
     {
-      src: "",
+      src: "/images/hero/DSC08259.JPG",
       alt: "Ankit and Avani growing together — Their Journey",
       caption: "Their Journey Together",
     },
@@ -53,7 +53,7 @@ export const weddingImages = {
       caption: "The Engagement",
     },
     {
-      src: "/images/hero/DSC08259.JPG",
+      src: "/images/engagement/DSC08106 (1).JPG",
       alt: "Ankit and Avani looking forward to their wedding — A Beautiful New Beginning",
       caption: "A Beautiful New Beginning",
     },
@@ -146,7 +146,7 @@ export const weddingImages = {
   personalMessage: {
     src: "/images/engagement/DSC08281.JPG",
     alt: "A beautiful portrait of Ankit and Avani together",
-    caption: "A Little Something From Your Family",
+    caption: "A Little Something From Patni Family",
   } as WeddingImage,
 
   // ── Closing Section ─────────────────────────────────────

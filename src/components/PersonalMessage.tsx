@@ -6,9 +6,11 @@ import { weddingImages } from "@/config/weddingImages";
 import { useAdmin } from "@/context/AdminContext";
 import HairlineDivider from "@/components/shared/HairlineDivider";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function PersonalMessage() {
   const [isBroken, setIsBroken] = useState(false);
+  const { t } = useLanguage();
 
   const handleBreakSeal = () => {
     if (!isBroken) {
@@ -66,7 +68,7 @@ export default function PersonalMessage() {
           >
             <Sparkles className="w-4 h-4 text-[#D4AF77]" />
             <span className="text-xs uppercase tracking-[0.25em] font-body font-semibold text-[#D4AF77]">
-              From Those Who Love You Most
+              {t("familyPre")}
             </span>
             <Sparkles className="w-4 h-4 text-[#D4AF77]" />
           </motion.div>
@@ -78,7 +80,7 @@ export default function PersonalMessage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display italic text-4xl sm:text-6xl md:text-7xl text-white mb-4"
           >
-            A Little Something From Patni Family
+            {t("familyTitle")}
           </motion.h2>
 
           <motion.p
@@ -185,13 +187,13 @@ export default function PersonalMessage() {
                   {/* Sign-off */}
                   <div className="text-right pt-2">
                     <p className="font-body text-xs text-[#3A211C]/60 uppercase tracking-widest mb-1">
-                      With eternal love, prayers, &amp; blessings,
+                      {t("alwaysAndForever")}
                     </p>
                     <p className="font-script text-4xl sm:text-5xl text-[#641E2B]" style={{ fontFamily: "'Pinyon Script', cursive" }}>
                       {weddingConfig.giftFrom}
                     </p>
                     <p className="text-[10px] uppercase tracking-widest text-[#3A211C]/40 font-body mt-1">
-                      Always &amp; Forever
+                      {t("alwaysForever")}
                     </p>
                   </div>
                 </motion.div>

@@ -148,18 +148,13 @@ export default function WeddingGallery() {
           </div>
         </div>
 
-        {/* Masonry Layout Grid */}
+        {/* 4 in a Row Structured Gallery Grid */}
         <motion.div
           layout
-          className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
         >
           {filteredItems.map((item, index) => {
-            const aspectClass =
-              item.aspectRatio === "portrait"
-                ? "aspect-[3/4]"
-                : item.aspectRatio === "landscape"
-                ? "aspect-[4/3]"
-                : "aspect-square";
+            const aspectClass = "aspect-square";
 
             return (
               <motion.div
@@ -170,7 +165,7 @@ export default function WeddingGallery() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
                 onClick={() => setLightboxIndex(index)}
-                className="break-inside-avoid relative rounded-2xl overflow-hidden bg-white p-3 shadow-md border border-[#D4AF77]/30 cursor-pointer group hover:shadow-xl hover:border-[#D4AF77] transition-all"
+                className="relative rounded-2xl overflow-hidden bg-white p-3 shadow-md border border-[#D4AF77]/30 cursor-pointer group hover:shadow-xl hover:border-[#D4AF77] transition-all flex flex-col justify-between"
               >
                 {/* Photo or Placeholder */}
                 <div className={`relative w-full rounded-xl overflow-hidden ${aspectClass} bg-[#FFF8F0]`}>

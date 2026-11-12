@@ -6,9 +6,11 @@ import { weddingConfig } from "@/config/weddingConfig";
 import { useAdmin } from "@/context/AdminContext";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import { createEvent, type EventAttributes } from "ics";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function WeddingEvents() {
   const { getPrimarySectionImage } = useAdmin();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<string>("all");
 
   const handleDownloadEventICS = (ev: WeddingEvent) => {
@@ -64,7 +66,7 @@ export default function WeddingEvents() {
           >
             <Sparkles className="w-4 h-4 text-[#D4AF77]" />
             <span className="text-xs uppercase tracking-[0.25em] font-body font-semibold text-[#641E2B]">
-              The Auspicious Schedule
+              {t("eventsPre")}
             </span>
             <Sparkles className="w-4 h-4 text-[#D4AF77]" />
           </motion.div>
@@ -76,7 +78,7 @@ export default function WeddingEvents() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A211C] mb-5"
           >
-            Ceremonies of Joy
+            {t("eventsTitle")}
           </motion.h2>
 
           <motion.p

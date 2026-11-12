@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getBlessings, submitBlessing, type BlessingItem } from "@/lib/supabase";
 import PillButton from "@/components/shared/PillButton";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 const EMOJIS = ["💖", "🪔", "🌸", "✨", "💍", "🕊️", "🌺", "🎉"];
 
 export default function BlessingsWall() {
+  const { t } = useLanguage();
   const [blessings, setBlessings] = useState<BlessingItem[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -128,7 +130,7 @@ export default function BlessingsWall() {
             transition={{ duration: 0.8 }}
             className="label text-[#B76E79] tracking-[0.25em] mb-3 text-xs sm:text-sm"
           >
-            Floating Lanterns
+            {t("blessingsPre")}
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -137,7 +139,7 @@ export default function BlessingsWall() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A2823] mb-4"
           >
-            The Blessings Wall
+            {t("blessingsTitle")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
@@ -273,7 +275,7 @@ export default function BlessingsWall() {
                 disabled={isSubmitting}
                 className="w-full justify-center py-3"
               >
-                {isSubmitting ? "Releasing Lantern..." : "Release Blessing Lantern ✦"}
+                {isSubmitting ? "Releasing Lantern..." : t("releaseLantern")}
               </PillButton>
 
               {statusMessage && (

@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, MapPin, Sparkles, Heart } from "lucide-react";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -6,9 +6,11 @@ import { weddingConfig } from "@/config/weddingConfig";
 import HairlineDivider from "@/components/shared/HairlineDivider";
 import PillButton from "@/components/shared/PillButton";
 import { createEvent, type EventAttributes } from "ics";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Countdown() {
   const timeLeft = useCountdown();
+  const { t } = useLanguage();
 
   const handleDownloadICS = () => {
     const eventConfig: EventAttributes = {
@@ -49,10 +51,10 @@ export default function Countdown() {
   };
 
   const timeUnits = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours },
-    { label: "Minutes", value: timeLeft.minutes },
-    { label: "Seconds", value: timeLeft.seconds }
+    { label: t("days"), value: timeLeft.days },
+    { label: t("hours"), value: timeLeft.hours },
+    { label: t("minutes"), value: timeLeft.minutes },
+    { label: t("seconds"), value: timeLeft.seconds }
   ];
 
   return (
@@ -61,8 +63,8 @@ export default function Countdown() {
       className="relative py-28 sm:py-36 px-6 sm:px-12 bg-gradient-to-b from-[#FFF8F0] via-[#F9EFE4]/60 to-[#FFF8F0] overflow-hidden"
       aria-label="Wedding Countdown & Celebration Details"
     >
-      {/* Decorative ambient backdrop */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-[#D9A6A1]/20 via-[#D4AF77]/25 to-[#F6D6DC]/30 rounded-full blur-[100px] pointer-events-none" />
+      {/* Decorative ambient backdrop (zero blur overhead) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] h-[350px] bg-gradient-to-r from-[#D9A6A1]/25 via-[#D4AF77]/25 to-[#F6D6DC]/30 rounded-full pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto text-center">
         {/* Pre-title */}
@@ -75,7 +77,7 @@ export default function Countdown() {
         >
           <Sparkles className="w-4 h-4 text-[#D4AF77]" />
           <span className="text-xs uppercase tracking-[0.25em] font-body font-semibold text-[#641E2B]">
-            Counting Down To The Sacred Vows
+            {t("countdownPre")}
           </span>
           <Sparkles className="w-4 h-4 text-[#D4AF77]" />
         </motion.div>
@@ -88,7 +90,7 @@ export default function Countdown() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A211C] mb-4"
         >
-          Every Heartbeat Closer
+          {t("countdownTitle")}
         </motion.h2>
 
         <motion.p
@@ -129,9 +131,9 @@ export default function Countdown() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 className="group relative"
               >
-                <div className="relative bg-white/70 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/80 shadow-[0_10px_30px_rgba(58,40,35,0.06)] transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_16px_36px_rgba(212,175,119,0.22)] group-hover:border-[#D4AF77]/60">
+                <div className="relative bg-white/75 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/80 shadow-[0_10px_30px_rgba(58,40,35,0.06)] transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_16px_36px_rgba(212,175,119,0.22)] group-hover:border-[#D4AF77]/60">
                   {/* Top hairline accent inside unit card */}
-                  <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF77] to-transparent" />
+                  <div className="absolute top-0 left-4 right-4 sm:left-6 sm:right-6 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF77] to-transparent" />
 
                   <div className="flex items-baseline justify-center">
                     <AnimatePresence mode="popLayout">
@@ -141,15 +143,15 @@ export default function Countdown() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.3 }}
-                        className="font-display italic text-5xl sm:text-6xl md:text-7xl text-[#3A211C] tracking-tight"
+                        className="font-display italic text-4xl sm:text-6xl md:text-7xl text-[#3A211C] tracking-tight"
                       >
                         {String(unit.value).padStart(2, "0")}
                       </motion.span>
                     </AnimatePresence>
                   </div>
 
-                  <div className="mt-2">
-                    <span className="font-body uppercase tracking-[0.2em] text-[11px] sm:text-xs font-semibold text-[#641E2B]">
+                  <div className="mt-1.5 sm:mt-2">
+                    <span className="font-body uppercase tracking-[0.2em] text-[10px] sm:text-xs font-semibold text-[#641E2B]">
                       {unit.label}
                     </span>
                   </div>
@@ -165,21 +167,21 @@ export default function Countdown() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="max-w-2xl mx-auto rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-white/90 via-[#FFF8F0]/90 to-white/90 border-2 border-[#D4AF77]/40 shadow-[0_16px_40px_rgba(100,30,43,0.07)] relative mb-12"
+          className="max-w-2xl mx-auto rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-white/90 via-[#FFF8F0]/90 to-white/90 border-2 border-[#D4AF77]/40 shadow-[0_16px_40px_rgba(100,30,43,0.07)] relative mb-12"
         >
           {/* Inner golden border frame */}
-          <div className="absolute inset-3 border border-[#D4AF77]/25 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-2 sm:inset-3 border border-[#D4AF77]/25 rounded-2xl pointer-events-none" />
 
-          <p className="text-[11px] uppercase tracking-[0.3em] font-body font-semibold text-[#641E2B] mb-2">
-            The Auspicious Date
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] font-body font-semibold text-[#641E2B] mb-2">
+            {t("auspiciousDateTitle")}
           </p>
 
-          <h3 className="font-display italic text-4xl sm:text-5xl md:text-6xl text-[#3A211C] mb-3">
-            26 JANUARY 2027
+          <h3 className="font-display italic text-3xl sm:text-5xl md:text-6xl text-[#3A211C] mb-2 sm:mb-3">
+            {t("weddingDate") || "26 JANUARY 2027"}
           </h3>
 
-          <p className="font-script text-2xl sm:text-3xl text-[#D4AF77] mb-6" style={{ fontFamily: "'Pinyon Script', cursive" }}>
-            Tuesday · Republic Day Celebration
+          <p className="font-script text-xl sm:text-3xl text-[#D4AF77] mb-5 sm:mb-6" style={{ fontFamily: "'Pinyon Script', cursive" }}>
+            {t("auspiciousDateSub")}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-body text-[#3A211C]/80 border-t border-[#D4AF77]/20 pt-6">
@@ -209,7 +211,7 @@ export default function Countdown() {
             onClick={handleDownloadICS}
             icon={<Calendar className="w-4 h-4" />}
           >
-            Add to Calendar (.ics)
+            {t("addToCalendar")}
           </PillButton>
 
           <PillButton
@@ -221,7 +223,7 @@ export default function Countdown() {
               </svg>
             }
           >
-            Google Calendar
+            {t("googleCalendar")}
           </PillButton>
         </motion.div>
       </div>

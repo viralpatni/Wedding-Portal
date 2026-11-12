@@ -149,6 +149,33 @@ export const initialGalleryItems: GalleryItem[] = [
     src: "",
     alt: "Ankit and Avani surrounded by their loving families sharing blessings",
     aspectRatio: "portrait"
+  },
+  {
+    id: "hld-2",
+    category: "Haldi",
+    title: "Golden Dhol Beats",
+    caption: "Lively music, joyous laughter, and fragrant marigold petals",
+    src: "",
+    alt: "Joyous Haldi ceremony music and celebration",
+    aspectRatio: "square"
+  },
+  {
+    id: "mhd-2",
+    category: "Mehendi",
+    title: "Scent of Henna",
+    caption: "Folk melodies and delicate bridal patterns",
+    src: "",
+    alt: "Bridal henna ceremony festivities",
+    aspectRatio: "square"
+  },
+  {
+    id: "fam-2",
+    category: "Family Moments",
+    title: "Laughter & Togetherness",
+    caption: "The Patni and family bonds celebrating together",
+    src: "",
+    alt: "Family members smiling together at the royal celebrations",
+    aspectRatio: "square"
   }
 ];
 

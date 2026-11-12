@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { config } from "@/lib/config";
 import HairlineDivider from "@/components/shared/HairlineDivider";
@@ -26,7 +26,7 @@ export default function LoveLetter() {
     <section
       id="letter"
       className="relative py-28 sm:py-36 px-6 sm:px-12 bg-gradient-to-b from-[#FFF8F0] via-[#F6D6DC]/10 to-[#FFF8F0] overflow-hidden"
-      aria-label="A Personal Message — A Little Something From Your Family"
+      aria-label="A Personal Message — A Little Something From Patni Family"
     >
       {/* Background accent */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-3xl pointer-events-none opacity-30"
@@ -60,7 +60,7 @@ export default function LoveLetter() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-[#3A211C]/60 font-body text-sm sm:text-base max-w-lg mx-auto"
           >
-            A little something from your family. A letter sealed with love, written from the heart. Break the seal to read.
+            A little something from Patni Family. A letter sealed with love, written from the heart. Break the seal to read.
           </motion.p>
         </div>
 
@@ -110,7 +110,7 @@ export default function LoveLetter() {
                     Sealed with Love
                   </p>
                   <p className="text-xs uppercase tracking-widest text-[#641E2B] font-medium font-body">
-                    A Little Something From Your Family · 2027
+                    A Little Something From Patni Family · 2027
                   </p>
                 </motion.div>
               ) : (

@@ -21,10 +21,13 @@ import {
   Users,
   CheckCircle,
   XCircle,
-  Volume2
+  Volume2,
+  Camera,
+  MapPin,
+  Key
 } from "lucide-react";
 import { useAdmin } from "@/context/AdminContext";
-import type { InvitationPageData, AdminImageItem } from "@/context/AdminContext";
+import type { InvitationPageData, AdminImageItem, LiveGuestPhoto, VenueLocationData } from "@/context/AdminContext";
 import {
   getStoredRSVPs,
   deleteStoredRSVP,
@@ -48,7 +51,11 @@ export default function AdminDashboard() {
     customImages,
     addImageToSection,
     removeImage,
-    getSectionImages
+    getSectionImages,
+    liveGuestPhotos,
+    deleteLiveGuestPhoto,
+    venueLocation,
+    updateVenueLocationData
   } = useAdmin();
 
   const navigate = useNavigate();
@@ -60,8 +67,14 @@ export default function AdminDashboard() {
     }
   }, [isAuthenticated, navigate]);
 
-  const [activeTab, setActiveTab] = useState<"invitation" | "images" | "rsvp" | "blessings">("invitation");
+  const [activeTab, setActiveTab] = useState<"invitation" | "images" | "rsvp" | "blessings" | "livePhotos" | "venue">("invitation");
   const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  // Venue form temporary state
+  const [venueForm, setVenueForm] = useState(venueLocation);
+  useEffect(() => {
+    setVenueForm(venueLocation);
+  }, [venueLocation]);
 
   // RSVP & Blessings Data State
   const [rsvps, setRsvps] = useState<(RSVPItem & { id: string; submitted_at: string })[]>([]);
@@ -267,6 +280,30 @@ export default function AdminDashboard() {
           >
             <MessageSquare className="w-4 h-4" />
             <span>Blessings Wall ({blessings.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("livePhotos")}
+            className={`flex items-center gap-2 px-5 py-2.5 border-b-2 text-xs uppercase tracking-wider font-semibold transition-all whitespace-nowrap ${
+              activeTab === "livePhotos"
+                ? "border-[#641E2B] text-[#641E2B]"
+                : "border-transparent text-[#3A211C]/60 hover:text-[#3A211C]"
+            }`}
+          >
+            <Camera className="w-4 h-4" />
+            <span>Live Guest Photos ({liveGuestPhotos.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("venue")}
+            className={`flex items-center gap-2 px-5 py-2.5 border-b-2 text-xs uppercase tracking-wider font-semibold transition-all whitespace-nowrap ${
+              activeTab === "venue"
+                ? "border-[#641E2B] text-[#641E2B]"
+                : "border-transparent text-[#3A211C]/60 hover:text-[#3A211C]"
+            }`}
+          >
+            <MapPin className="w-4 h-4" />
+            <span>Venue &amp; Geoapify Map</span>
           </button>
         </div>
       </header>
@@ -1250,6 +1287,318 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+        {/* ========================================================= */}
+        {/* TAB 5: LIVE GUEST PHOTOS                                  */}
+        {/* ========================================================= */}
+        {activeTab === "livePhotos" && (
+          <div className="space-y-8">
+            {/* Header */}
+            <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Camera className="w-4 h-4 text-[#D4AF77]" />
+                  <span className="text-xs uppercase tracking-widest text-[#D4AF77] font-semibold">
+                    Live Guest Photo Wall — Admin View
+                  </span>
+                </div>
+                <h2 className="font-display italic text-3xl text-[#3A211C]">
+                  Guest Memories ({liveGuestPhotos.length})
+                </h2>
+                <p className="text-xs text-[#3A211C]/70 max-w-2xl mt-1">
+                  All photos uploaded by guests via the live photo wall on the main website are shown here. You can review and delete inappropriate content.
+                </p>
+              </div>
+              {liveGuestPhotos.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to clear ALL guest photos? This cannot be undone.")) {
+                      liveGuestPhotos.forEach(p => deleteLiveGuestPhoto(p.id));
+                      showToast("All guest photos cleared.");
+                    }
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold uppercase tracking-wider hover:bg-red-100 transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Clear All Photos</span>
+                </button>
+              )}
+            </div>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { label: "Total Photos", value: liveGuestPhotos.length, icon: "📸" },
+                { label: "Total Likes", value: liveGuestPhotos.reduce((acc, p) => acc + (p.likes || 0), 0), icon: "❤️" },
+                { label: "Avg. Likes", value: liveGuestPhotos.length ? Math.round(liveGuestPhotos.reduce((acc, p) => acc + (p.likes || 0), 0) / liveGuestPhotos.length) : 0, icon: "✨" },
+                { label: "Unique Guests", value: new Set(liveGuestPhotos.map(p => p.guestName)).size, icon: "👥" }
+              ].map(stat => (
+                <div key={stat.label} className="bg-white/80 rounded-2xl p-4 border border-[#D4AF77]/25 shadow-sm text-center">
+                  <div className="text-2xl mb-1">{stat.icon}</div>
+                  <div className="text-2xl font-display italic text-[#641E2B] font-bold">{stat.value}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-[#3A211C]/60 font-semibold mt-0.5">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Photos Grid */}
+            {liveGuestPhotos.length === 0 ? (
+              <div className="bg-white/60 rounded-3xl p-16 border border-[#D4AF77]/20 text-center">
+                <div className="text-5xl mb-3">📸</div>
+                <p className="font-display italic text-xl text-[#3A211C]/60">No guest photos yet</p>
+                <p className="text-xs text-[#3A211C]/40 mt-1">When guests upload photos on the live website, they will appear here.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {liveGuestPhotos.map(photo => (
+                  <div key={photo.id} className="bg-white rounded-2xl border border-[#D4AF77]/25 shadow-sm overflow-hidden group">
+                    {/* Photo thumbnail */}
+                    <div className="relative aspect-square overflow-hidden bg-[#FFF8F0]">
+                      <img
+                        src={photo.imageUrl}
+                        alt={photo.caption || photo.guestName}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23FFF8F0'/%3E%3Ctext x='50%25' y='50%25' font-size='40' text-anchor='middle' dy='.3em'%3E📸%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                      {/* Like badge */}
+                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 text-xs font-semibold text-[#641E2B] shadow-sm">
+                        ❤️ {photo.likes || 0}
+                      </div>
+                    </div>
+
+                    {/* Photo info */}
+                    <div className="p-3.5 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm text-[#3A211C] truncate">{photo.guestName}</p>
+                          {photo.caption && (
+                            <p className="text-xs text-[#3A211C]/70 mt-0.5 line-clamp-2 leading-relaxed">{photo.caption}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-[#3A211C]/40 font-medium">
+                          {new Date(photo.timestamp).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Delete photo by "${photo.guestName}"?`)) {
+                              deleteLiveGuestPhoto(photo.id);
+                              showToast("Photo deleted.");
+                            }
+                          }}
+                          className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
+                          title="Delete photo"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 6: VENUE & GEOAPIFY MAP SETTINGS                       */}
+        {/* ========================================================= */}
+        {activeTab === "venue" && (
+          <div className="space-y-8">
+            {/* Header */}
+            <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className="w-4 h-4 text-[#D4AF77]" />
+                  <span className="text-xs uppercase tracking-widest text-[#D4AF77] font-semibold">
+                    Live Venue & Interactive Map Config
+                  </span>
+                </div>
+                <h2 className="font-display italic text-3xl text-[#3A211C]">
+                  Venue & Geoapify Map Settings
+                </h2>
+                <p className="text-xs text-[#3A211C]/70 max-w-2xl mt-1">
+                  Set the exact venue coordinates, name, and your Geoapify API key. The map on the main website will update instantly with your changes.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Venue Details Form */}
+              <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm space-y-5">
+                <h3 className="font-display italic text-xl text-[#3A211C] flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-[#641E2B]" />
+                  Venue Details
+                </h3>
+
+                {/* Venue Name */}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">Venue Name</label>
+                  <input
+                    type="text"
+                    value={venueForm.venueName}
+                    onChange={e => setVenueForm(prev => ({ ...prev, venueName: e.target.value }))}
+                    placeholder="e.g. The Royal Grand Heritage Palace"
+                    className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow"
+                  />
+                </div>
+
+                {/* City */}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">City</label>
+                  <input
+                    type="text"
+                    value={venueForm.city}
+                    onChange={e => setVenueForm(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="e.g. Jaipur, Rajasthan"
+                    className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow"
+                  />
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">Full Address</label>
+                  <textarea
+                    rows={2}
+                    value={venueForm.address}
+                    onChange={e => setVenueForm(prev => ({ ...prev, address: e.target.value }))}
+                    placeholder="e.g. Palace Road, Central Heritage Zone, Jaipur"
+                    className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow resize-none"
+                  />
+                </div>
+
+                {/* Coordinates */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">Latitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={venueForm.lat}
+                      onChange={e => setVenueForm(prev => ({ ...prev, lat: parseFloat(e.target.value) || 0 }))}
+                      placeholder="e.g. 26.9124"
+                      className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">Longitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={venueForm.lng}
+                      onChange={e => setVenueForm(prev => ({ ...prev, lng: parseFloat(e.target.value) || 0 }))}
+                      placeholder="e.g. 75.7873"
+                      className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-[#FFF8F0] rounded-xl p-3 border border-[#D4AF77]/20 text-xs text-[#3A211C]/70">
+                  💡 <strong>How to get coordinates:</strong> Open <a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="text-[#641E2B] underline">Google Maps</a>, right-click on the venue location, and click the coordinates that appear. Paste them above.
+                </div>
+              </div>
+
+              {/* Geoapify API Key */}
+              <div className="bg-white/80 rounded-3xl p-6 sm:p-8 border border-[#D4AF77]/30 shadow-sm space-y-5">
+                <h3 className="font-display italic text-xl text-[#3A211C] flex items-center gap-2">
+                  <Key className="w-5 h-5 text-[#641E2B]" />
+                  Geoapify API Key
+                </h3>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-[#641E2B] mb-1.5">API Key</label>
+                  <input
+                    type="text"
+                    value={venueForm.apiKey}
+                    onChange={e => setVenueForm(prev => ({ ...prev, apiKey: e.target.value }))}
+                    placeholder="Paste your Geoapify API key here..."
+                    className="w-full px-4 py-3 rounded-xl border border-[#D4AF77]/40 bg-[#FFFDFB] text-sm text-[#3A211C] focus:outline-none focus:ring-2 focus:ring-[#D4AF77]/60 transition-shadow font-mono"
+                  />
+                </div>
+
+                <div className="bg-gradient-to-br from-[#FFF8F0] to-[#FBECE8] rounded-2xl p-4 border border-[#D4AF77]/25 space-y-3">
+                  <p className="text-xs font-semibold text-[#641E2B] uppercase tracking-wider">🗺️ How to get a free Geoapify API key</p>
+                  <ol className="text-xs text-[#3A211C]/75 space-y-1.5 list-decimal list-inside leading-relaxed">
+                    <li>Visit <a href="https://myprojects.geoapify.com/register" target="_blank" rel="noreferrer" className="text-[#641E2B] underline">myprojects.geoapify.com/register</a></li>
+                    <li>Create a free account (3,000 requests/day free)</li>
+                    <li>Click "New Project" and copy the API key</li>
+                    <li>Paste it above and click "Save Changes"</li>
+                  </ol>
+                </div>
+
+                {/* Current Settings Preview */}
+                <div className="bg-[#FFF8F0] rounded-xl p-4 border border-[#D4AF77]/20 space-y-2">
+                  <p className="text-xs font-semibold text-[#641E2B] uppercase tracking-wider mb-2">📍 Current Live Settings</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <p className="text-[#3A211C]/50 uppercase tracking-wider text-[10px]">Venue</p>
+                      <p className="text-[#3A211C] font-medium truncate">{venueLocation.venueName}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#3A211C]/50 uppercase tracking-wider text-[10px]">City</p>
+                      <p className="text-[#3A211C] font-medium">{venueLocation.city}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#3A211C]/50 uppercase tracking-wider text-[10px]">Coordinates</p>
+                      <p className="text-[#3A211C] font-medium font-mono">{venueLocation.lat.toFixed(4)}, {venueLocation.lng.toFixed(4)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#3A211C]/50 uppercase tracking-wider text-[10px]">API Key</p>
+                      <p className="text-[#3A211C] font-medium font-mono">
+                        {venueLocation.apiKey ? `${venueLocation.apiKey.substring(0, 8)}...` : "Not set (using OSM fallback)"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  updateVenueLocationData(venueForm);
+                  showToast("Venue & Map settings saved! The live website map has been updated.");
+                }}
+                className="px-8 py-3.5 rounded-xl bg-[#641E2B] text-white text-sm font-semibold uppercase tracking-wider hover:bg-[#4E1420] transition-colors flex items-center gap-2 shadow-md"
+              >
+                <MapPin className="w-4 h-4 text-[#D4AF77]" />
+                <span>Save Venue & Map Settings</span>
+              </button>
+            </div>
+
+            {/* Map Preview Info */}
+            <div className="bg-gradient-to-br from-[#FFF8F0] to-white rounded-3xl p-6 border border-[#D4AF77]/25 shadow-sm">
+              <h4 className="font-display italic text-lg text-[#3A211C] mb-3 flex items-center gap-2">
+                🗺️ Map Features on Live Website
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { icon: "🏙️", title: "Normal Street View", desc: "OpenStreetMap bright style with streets, landmarks and labels." },
+                  { icon: "🛰️", title: "Satellite View", desc: "Aerial imagery from Geoapify satellite tile layer." },
+                  { icon: "🌐", title: "3D Tilt View", desc: "Isometric perspective view with tilt effect for a 3D feel." }
+                ].map(f => (
+                  <div key={f.title} className="bg-white/60 rounded-2xl p-4 border border-[#D4AF77]/20 text-center">
+                    <div className="text-3xl mb-2">{f.icon}</div>
+                    <p className="font-semibold text-sm text-[#641E2B] mb-1">{f.title}</p>
+                    <p className="text-xs text-[#3A211C]/65 leading-relaxed">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 text-center">
+                <a href="/#travel" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#641E2B]/10 text-[#641E2B] text-xs font-semibold uppercase tracking-wider hover:bg-[#641E2B]/20 transition-colors border border-[#641E2B]/20">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  View Live Map on Website
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </main>

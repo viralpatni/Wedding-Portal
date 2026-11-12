@@ -113,17 +113,18 @@ export default function PhotoAlbum() {
                 const isCenter = offset === 0;
                 const isAdjacent = Math.abs(offset) === 1;
 
-                // 3D positioning
-                const translateX = offset * 220; // px
-                const translateZ = -Math.abs(offset) * 140; // px
-                const rotateY = offset * -28; // deg
-                const scale = 1 - Math.abs(offset) * 0.15;
+                // Responsive 3D positioning
+                const isMobileScreen = typeof window !== "undefined" && window.innerWidth < 640;
+                const translateX = offset * (isMobileScreen ? 110 : 210); // px
+                const translateZ = -Math.abs(offset) * (isMobileScreen ? 80 : 130); // px
+                const rotateY = offset * (isMobileScreen ? -18 : -26); // deg
+                const scale = 1 - Math.abs(offset) * 0.14;
                 const opacity = Math.abs(offset) > 2 ? 0 : 1 - Math.abs(offset) * 0.35;
 
                 return (
                   <motion.div
                     key={photo.caption || index}
-                    className="absolute w-[270px] sm:w-[320px] aspect-[3/4] cursor-pointer"
+                    className="absolute w-[220px] sm:w-[280px] md:w-[320px] aspect-[3/4] cursor-pointer"
                     animate={{
                       x: translateX,
                       z: translateZ,

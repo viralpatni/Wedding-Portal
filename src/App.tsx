@@ -5,10 +5,13 @@ import { sanitizeGuestName } from "@/lib/sanitize";
 import { config } from "@/lib/config";
 import { weddingConfig } from "@/config/weddingConfig";
 import { AdminProvider } from "@/context/AdminContext";
+import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 
 // Admin Pages
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import VenueDirections from "@/pages/VenueDirections";
+import SnapCamera from "@/pages/SnapCamera";
 
 // UI Components
 import Navigation from "@/components/Navigation";
@@ -28,6 +31,7 @@ import WeddingEvents from "@/components/WeddingEvents";
 import LoveStory from "@/components/LoveStory";
 import PhotoAlbum from "@/components/PhotoAlbum";
 import WeddingGallery from "@/components/WeddingGallery";
+import LivePhotoWall from "@/components/sections/LivePhotoWall";
 import WeddingVideo from "@/components/WeddingVideo";
 import PersonalMessage from "@/components/PersonalMessage";
 import BlessingsWall from "@/components/sections/BlessingsWall";
@@ -148,6 +152,9 @@ function WeddingWebsite() {
         {/* SECTION 8: WEDDING PHOTO GALLERY */}
         <WeddingGallery />
 
+        {/* SECTION 8B: LIVE WEDDING PHOTO WALL (GUEST PHONE UPLOADS & QR) */}
+        <LivePhotoWall />
+
         {/* SECTION 9: WEDDING FILM & CINEMATIC VIDEO */}
         <WeddingVideo />
 
@@ -169,14 +176,18 @@ function WeddingWebsite() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AdminProvider>
-        <Routes>
-          <Route path="/" element={<WeddingWebsite />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AdminProvider>
+      <LanguageProvider>
+        <AdminProvider>
+          <Routes>
+            <Route path="/" element={<WeddingWebsite />} />
+            <Route path="/snap" element={<SnapCamera />} />
+            <Route path="/venue-directions" element={<VenueDirections />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AdminProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

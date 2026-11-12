@@ -28,6 +28,24 @@ export interface AdminImageItem {
   dateAdded: string;
 }
 
+export interface LiveGuestPhoto {
+  id: string;
+  guestName: string;
+  caption: string;
+  imageUrl: string;
+  timestamp: string;
+  likes: number;
+}
+
+export interface VenueLocationData {
+  venueName: string;
+  city: string;
+  address: string;
+  lat: number;
+  lng: number;
+  apiKey: string;
+}
+
 export interface AdminContextType {
   isAuthenticated: boolean;
   login: (user: string, pass: string) => boolean;
@@ -46,6 +64,14 @@ export interface AdminContextType {
   removeImage: (id: string) => void;
   getSectionImages: (section: AdminImageItem["section"]) => AdminImageItem[];
   getPrimarySectionImage: (section: AdminImageItem["section"], fallback: string) => string;
+  // Live Photo Wall
+  liveGuestPhotos: LiveGuestPhoto[];
+  addLiveGuestPhoto: (photo: Omit<LiveGuestPhoto, "id" | "timestamp" | "likes">) => void;
+  deleteLiveGuestPhoto: (id: string) => void;
+  likeLiveGuestPhoto: (id: string) => void;
+  // Venue & Geoapify Mapping
+  venueLocation: VenueLocationData;
+  updateVenueLocationData: (updates: Partial<VenueLocationData>) => void;
 }
 
 const DEFAULT_INVITATION_PAGES: InvitationPageData[] = [
@@ -65,11 +91,24 @@ const DEFAULT_INVITATION_PAGES: InvitationPageData[] = [
   }
 ];
 
+const DEFAULT_VENUE_LOCATION: VenueLocationData = {
+  venueName: "The Royal Grand Heritage Palace",
+  city: "Jaipur, Rajasthan",
+  address: "Palace Road, Central Heritage Zone, Jaipur",
+  lat: 26.9124,
+  lng: 75.7873,
+  apiKey: ""
+};
+
+const DEFAULT_LIVE_PHOTOS: LiveGuestPhoto[] = [];
+
 const STORAGE_KEYS = {
   AUTH: "avnit_admin_auth",
   INVITATION_CONFIG: "avnit_invitation_config",
   INVITATION_PAGES: "avnit_invitation_pages",
-  CUSTOM_IMAGES: "avnit_custom_images"
+  CUSTOM_IMAGES: "avnit_custom_images",
+  LIVE_PHOTOS: "avnit_live_guest_photos",
+  VENUE_LOCATION: "avnit_venue_location"
 };
 
 const AdminContext = createContext<AdminContextType | null>(null);
@@ -113,6 +152,31 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return [];
   });
 
+  // Live Guest Photos
+  const [liveGuestPhotos, setLiveGuestPhotos] = useState<LiveGuestPhoto[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.LIVE_PHOTOS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Remove legacy placeholder items if present
+          const valid = parsed.filter((p: LiveGuestPhoto) => !["lp-1", "lp-2", "lp-3"].includes(p.id));
+          return valid;
+        }
+      }
+    } catch {}
+    return DEFAULT_LIVE_PHOTOS;
+  });
+
+  // Venue & Geoapify Mapping Config
+  const [venueLocation, setVenueLocation] = useState<VenueLocationData>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.VENUE_LOCATION);
+      if (saved) return { ...DEFAULT_VENUE_LOCATION, ...JSON.parse(saved) };
+    } catch {}
+    return DEFAULT_VENUE_LOCATION;
+  });
+
   // Save changes to localStorage
   useEffect(() => {
     try {
@@ -131,6 +195,18 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem(STORAGE_KEYS.CUSTOM_IMAGES, JSON.stringify(customImages));
     } catch {}
   }, [customImages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.LIVE_PHOTOS, JSON.stringify(liveGuestPhotos));
+    } catch {}
+  }, [liveGuestPhotos]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.VENUE_LOCATION, JSON.stringify(venueLocation));
+    } catch {}
+  }, [venueLocation]);
 
   // Auth Functions
   const login = (user: string, pass: string): boolean => {
@@ -207,6 +283,32 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return match ? match.src : fallback;
   };
 
+  // Live Photo Wall Methods
+  const addLiveGuestPhoto = (photo: Omit<LiveGuestPhoto, "id" | "timestamp" | "likes">) => {
+    const newPhoto: LiveGuestPhoto = {
+      ...photo,
+      id: `live-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      likes: 1
+    };
+    setLiveGuestPhotos((prev) => [newPhoto, ...prev]);
+  };
+
+  const deleteLiveGuestPhoto = (id: string) => {
+    setLiveGuestPhotos((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const likeLiveGuestPhoto = (id: string) => {
+    setLiveGuestPhotos((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, likes: (p.likes || 1) + 1 } : p))
+    );
+  };
+
+  // Venue & Geoapify Methods
+  const updateVenueLocationData = (updates: Partial<VenueLocationData>) => {
+    setVenueLocation((prev) => ({ ...prev, ...updates }));
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -224,7 +326,13 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addImageToSection,
         removeImage,
         getSectionImages,
-        getPrimarySectionImage
+        getPrimarySectionImage,
+        liveGuestPhotos,
+        addLiveGuestPhoto,
+        deleteLiveGuestPhoto,
+        likeLiveGuestPhoto,
+        venueLocation,
+        updateVenueLocationData
       }}
     >
       {children}
@@ -239,4 +347,3 @@ export const useAdmin = () => {
   }
   return context;
 };
-
